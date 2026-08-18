@@ -1,0 +1,8 @@
+-- Cleared in iteration 8 (02_opus).
+--
+-- Scratch attempt at `dedup`/`listingOfPrefix` cyclic-rotation transport lemmas.
+-- Never imported by the AllenderOQ3 roll-up; carried only unproved placeholders.
+-- The target grouping obligation no longer needs these: it is discharged in
+-- AllenderOQ3/Internal/CutNecklace.lean via `necklaceLayerOrder_succ` (a
+-- definitional unfolding) directly from the isolated contiguity leaf, with no
+-- cyclic rotation required.  Left empty.

@@ -1,0 +1,5 @@
+# Frozen exact model, incidence certificate, principle signatures, and statement.
+93a24453d948fa8f74b1afc705f7b90edb45d96efd40cc3feee706a444a23f30  AllenderOQ3/Model.lean
+002b1d0f8e05af40996b4292dc431d05c07aaaeee7dae6446f149109cb8fb94a  AllenderOQ3/Incidence.lean
+0a0e2f3e72134088c19ed7ebecde93caa065a00dca8d45acf66df43ffd88e920  AllenderOQ3/Principles.lean
+fdb9eab38049422ccbfda925a0305fe19d03a456ecb930d71d4a64f72052619f  AllenderOQ3/Statement.lean

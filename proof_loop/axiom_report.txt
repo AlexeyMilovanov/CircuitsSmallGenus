@@ -1,0 +1,5 @@
+turing_candidate_000003 : AllenderOQ3Statement
+turing_candidate_000003_of_principles : AllenderOQ3ConditionalStatement
+'AllenderOQ3.External.rotationZeroPlanarity' depends on axioms: [propext, Classical.choice, Quot.sound]
+'turing_candidate_000003_of_principles' depends on axioms: [propext, Classical.choice, Quot.sound]
+'turing_candidate_000003' depends on axioms: [propext, Classical.choice, Quot.sound]

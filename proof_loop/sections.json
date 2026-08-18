@@ -1,0 +1,69 @@
+[
+ {
+  "id": "external_facts",
+  "title": "Allender OQ3: close the Hansen and cylindrical-ACC proof obligations",
+  "module": "AllenderOQ3.ExternalFacts",
+  "workflow": "proof",
+  "actionable_sorries": "external",
+  "files": [
+   "AllenderOQ3/Internal/",
+   "AllenderOQ3/Internal.lean",
+   "AllenderOQ3/ExternalFacts.lean",
+   "COVERAGE.md"
+  ],
+  "allowed_prefixes": [
+   "AllenderOQ3/Internal/",
+   "AllenderOQ3/Internal.lean",
+   "AllenderOQ3/ExternalFacts.lean",
+   "COVERAGE.md",
+   "proof_loop/COMPLETE.external_facts"
+  ],
+  "forbidden_prefixes": [
+   "AllenderOQ3/Model.lean",
+   "AllenderOQ3/Incidence.lean",
+   "AllenderOQ3/Principles.lean",
+   "AllenderOQ3/Statement.lean",
+   "AllenderOQ3/Target.lean",
+   "scripts/",
+   "docs/",
+   "README.md",
+   "FORMALIZATION_PLAN.md",
+   "lakefile.toml",
+   "lean-toolchain",
+   "lake-manifest.json"
+  ],
+  "context_files": [
+   "AllenderOQ3/Model.lean",
+   "AllenderOQ3/Incidence.lean",
+   "AllenderOQ3/Principles.lean",
+   "AllenderOQ3/ExternalFacts.lean",
+   "AllenderOQ3/Statement.lean",
+   "AllenderOQ3/Target.lean",
+   "docs/EXTERNAL_FACTS.md",
+   "docs/INCIDENCE_REFINEMENT.md",
+   "docs/HMV_ALGEBRA_NOTES.md",
+   "docs/EXACT_MODEL_NOTES.md",
+   "docs/ASSEMBLY_DESIGN.md",
+   "docs/LOCAL_DIVISOR_PLAN.md",
+   "docs/localdivisor/oq3-local-divisor-acc-paper-route-2026-08-18.md",
+   "docs/localdivisor/oq3-minimal-algebraic-target-paper-proof-2026-08-18.md"
+  ],
+  "plan_file": "docs/EXTERNAL_FACTS_FORMALIZATION_PLAN.md",
+  "source_file": "docs/EXTERNAL_FACTS.md",
+  "completion_file": "proof_loop/COMPLETE.external_facts",
+  "always_submit_aristotle": true,
+  "global_goal": "Eliminate both remaining sorry bodies, External.hansenArcOrder and External.quantitativeCylindricalACC, plus every temporary supporting sorry, while preserving the exact frozen principle signatures. The final unconditional Allender OQ3 theorem must have no sorryAx.",
+  "milestone_guidance": "ROUTE CHANGE 2026-08-18 (commit e2e7948): the Barrington-Therien obligation is now closed by the LOCAL-DIVISOR route. READ docs/LOCAL_DIVISOR_PLAN.md FIRST - it is the master plan with complete paper proofs, exact Lean decomposition, size estimates, and care spots; the verified source papers are docs/localdivisor/*.md. monoidWordACC_nonCrossing is DERIVED sorry-free in LocalDivisorRoute.lean; exactly FIVE sorries remain, all internal: S1 localUnitsCommute_of_surjective (LocalUnitsCommute.lean) - groups lift through surjections of finite monoids; pure algebra, complete recipe in plan section 2; PERFECT first Aristotle target. S2 monoidWordACCGen_compression (LocalDivisorCompression.lean) - the marked BLOCK-LOCAL compression lemma; plan section 3; the derived local-divisor word must be built separately for every requested block (a Rees-quotient counterexample otherwise - do not simplify this away); reuse the guess-and-verify shapes of RTrivialWordACC/EpochReduction and gadgets exists_acc_orPair, assemble_size_bound, const_mul_pow_le_pow. S3 monoidWordACCGen_of_genOn (same file) - representation expansion; plan section 4; self-contained. S4 monoidWordACCGen_of_localUnitsCommute (LocalDivisorInduction.lean) - strong induction on Nat.card with a MINIMAL-CARDINALITY generating Finset (an arbitrary nonunit c with N=closure(M minus c) does NOT terminate - see plan section 5); base case via mul_comm_of_localUnitsCommute_units + letI CommMonoid + monoidWordACCGen_of_comm; step via S2+S3 and the proven transports localUnitsCommute_submonoid / localUnitsCommute_localDivisor / card_localDivisor_lt. S5 localUnitsCommute_nonCrossing (LocalDivisorRoute.lean) - abelianness of the local groups of the certified monoid; the LARGEST item; DECOMPOSE FIRST into the five files of plan section 6 (6a ConstantFreeLayers: constant-free certified layers + endpoint fixing; 6b ComponentLemma: intervalCount monotone + equality case for constant-free words, per generator from the ArcOrderCertificate then list induction - NO stacked certificates; 6c RotationLemma: antichain rotation, the hardest geometry; 6d ConstantFreeAbelian: strata embedding - REUSE LayerProduct.lean resHomAt/eq_one_of_forall_resHomAt and IntervalPieces/IntervalStart; 6e ConstantElimination: the clamp layer A + fan-fill layer B + conjugation Phi(f)=A*f*B + WORD-WISE constant propagation; include the min/max endpoint-fixing argument of plan 6e step 3 - it repairs a real gap). HARD PROHIBITIONS: do not revive interval-count/stabilizer/layer-rigidity arguments for arbitrary stabilized sets (refuted - obstruction headers in IntervalReduction.lean, LayerRestriction.lean, StretchHolonomyObstruction.lean); do not use the iter-15 Python model for any computational check (UNSOUND - use docs/experiments/exact_layers_w4.py conventions; exact w=4 monoid has 3,551,466 elements, bijectives = exactly the 4 rotations); do not modify the MonoidWordACCGen interface or the frozen statement files; op-order warning: TransMonoid is (Function.End)mop, runTrans (p*q) x = runTrans q (runTrans p x) - state geometry through runTrans. Numerical anchors: all 693 realized permutation groups (w=4, subsets up to size 5) are cyclic hence abelian; on the endpoint-fixing part the component inequality and antichain rotation hold with zero exceptions over 14,238,180 instances (docs/EXACT_MODEL_NOTES.md). Suggested iteration order: wave 1 = S1, S3, 6a, and the factorization core of S2 in parallel; wave 2 = S2 assembly, S4, 6b; wave 3 = 6c, 6d, 6e. Keep every merge green with trust PASS; decompose before attacking; record dead ends as obstruction headers.",
+  "statement_guards": "Model, incidence certificate, principle propositions, and final statement are frozen. Only proof bodies and supporting internal lemmas may change. Do not weaken uniform quantifier order, total-width hypotheses, exact semantics, coefficient-free polynomial size, or the common incidence-word certificate. Bridge cases must be phrased using face-side dart incidences; E2 must handle literal output, width zero, sparse layers, and arbitrary input references.",
+  "conventions": "Use Lean 4.28 and Mathlib v4.28.0. The two sorries in ExternalFacts.lean are actionable and are the overall objective, not black boxes. Honest smaller internal sorries may be introduced transiently when they expose real dependencies, but total proof debt must trend toward zero. Warnings are informational. A failed build or merge is a repair target for the next agent, not a reason to stop.",
+  "targets": [
+   "REUSE (proved 2026-08-17, do not re-prove): LocalizedCyclicity.lean (localized HMV L12 + antichain layering), RealizedPerms.lean (H1 pinned: IsCyclic (realizedSubgroup S); group structure, layer respect, determinacy reduction), HolonomySkeleton.lean (reachability preorder, height measure, card_epoch_events_le epoch bound), HolonomyGroups.lean (H2 pinned: IsCyclic (realizedFamSubgroup A); family subgroup, reachEquiv witnesses bijective), ConstantMaps.lean (constTrans_mem_nonCrossing via explicit constCircuit; singletons reachable; bricksOf + exists_brick_mem covering); LetterWordACCGen leaf wiring; assembly design in docs/ASSEMBLY_DESIGN.md",
+   "E2-c-3 NEXT: relative Zeiger coordinates of the tower (docs/ASSEMBLY_DESIGN.md sections 1-3): per-level brick index + cyclic alignment with letter+driver update laws, epoch events via hgtMeasure drops (top level DONE: card_epoch_events_le); then E2-c-4 gadget instantiation and E2-c-5 assembly",
+   "E2-b1: HMV interval lemmas L9/L10/L11 for GENERATOR layer maps from the incidence certificate (ConfigInterval + GeneratorGeometry continue), then closure under composition",
+   "E2-b2 HEART (computationally validated w<=3, see docs/HMV_ALGEBRA_NOTES.md section 4): localized cyclicity H1 - for every S : Finset (Config w), the group {m|_S : m in NonCrossing w, m(S) = S} is cyclic; and brick-family version H2 (holonomy groups) - route: L12-style min-antichain preservation + L10 rotations + L11 betweenness determinacy",
+   "E2-c ASSEMBLY (open design, do NOT improvise R-block-only schemes): holonomy-style triangular cascade for the action (NonCrossing w, Config w) feeding cascade_cyclic_layer (groups cyclic by H1/H2) and aperiodic layers; aperiodic layers must be brought to bounded-change form for cascade_aperiodic_layer (per-level descent/brick-collapse epochs ARE bounded by lattice height) or a last-reset gadget must be added; rank-1 point dynamics is closed only by the full tower",
+   "E2-d: final assembly closing letterWordACCGen_impl, reusing letterWordACC_zero and letterWordACC_units"
+  ],
+  "notes": "Production order is Gemini 3.1 Pro High -> direct Claude Opus 4.8 -> Aristotle. Iterations 1, 6, 11, ... are read-only strategic rounds. Their output is rolling guidance, never an ownership schedule."
+ }
+]
