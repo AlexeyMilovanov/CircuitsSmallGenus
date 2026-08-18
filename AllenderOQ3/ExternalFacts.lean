@@ -5,12 +5,12 @@ import AllenderOQ3.Internal.ShortWordProblem
 import AllenderOQ3.Internal.LetterWordAssembly
 
 /-!
-# Three principle signatures, one permanent external fact
+# Three principle signatures, all proved internally
 
-These are the three principle signatures used by the final wrapper.  The first
-two are now proved internally; only the third remains in the intended trust
-boundary.  Keeping all three signatures preserves the audited conditional API
-while exposing exactly which assumptions remain external.
+These are the three principle signatures used by the final wrapper.  All three
+are now proved internally; nothing is left in the intended trust boundary.
+Keeping all three signatures preserves the audited conditional API while
+exposing exactly which assumptions the final wrapper supplies.
 
 The first principle says that zero in the candidate's minimum-rotation genus
 is attained by a zero-genus rotation; finite attainment is proved below from
@@ -40,7 +40,8 @@ necklace construction of `Internal.hansenArcOrder_impl`. -/
 theorem hansenArcOrder : HansenArcOrderPrinciple := by
   exact Internal.hansenArcOrder_impl
 
-/-- The one remaining permanent external fact. -/
+/-- The formerly external quantitative cylindrical ACC simulation, now
+kernel-proved from the short-word-problem route. -/
 theorem quantitativeCylindricalACC :
     QuantitativeCylindricalACCPrinciple := by
   exact Internal.quantitativeCylindricalACC_of_shortWordProblem Internal.shortWordProblemACC_impl

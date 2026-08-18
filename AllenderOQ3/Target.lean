@@ -5,9 +5,10 @@ import AllenderOQ3.Internal
 # Exact Allender OQ3 target
 
 The theorem below is definitionally the proposition in the audited corrected
-candidate.  All internal work items have been discharged.  The finite
-rotation-attainment principle is kernel-proved; the two `sorry`s remaining in
-`ExternalFacts.lean` are the Hansen and quantitative ACC facts.
+candidate.  All internal work items have been discharged, and all three
+principles supplied below -- rotation attainment, the Hansen arc order, and
+the quantitative cylindrical ACC simulation -- are kernel-proved in
+`ExternalFacts.lean`.
 -/
 
 set_option autoImplicit false

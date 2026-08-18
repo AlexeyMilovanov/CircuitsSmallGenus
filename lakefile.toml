@@ -16,3 +16,11 @@ rev = "v4.28.0"
 
 [[lean_lib]]
 name = "AllenderOQ3"
+
+# Standalone modules used by leanprover/comparator.  `Challenge` imports only
+# Mathlib; `Solution` connects the trusted statement to the checked theorem.
+[[lean_lib]]
+name = "Challenge"
+
+[[lean_lib]]
+name = "Solution"

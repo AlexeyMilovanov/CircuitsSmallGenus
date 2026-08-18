@@ -1,0 +1,259 @@
+name: Comparator
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: comparator-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Check the trusted Allender OQ3 statement
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      COMPARATOR_COMMIT: 7a0cae3df7a0200ff330c82420b8d88a51c9cac7
+      LEAN4EXPORT_COMMIT: d065b0009aed0520e9e99752847a33b337661690
+      COMPARATOR_MANIFEST_LEAN4EXPORT: 048394e1afeeb52b0fa27bcf3f1ade2ff0f0ab6d
+      LEAN4CHECKER_COMMIT: b7398199245524275543dec6113229c9bb4902e5
+      LANDRUN_COMMIT: 5ed4a3db3a4ad930d577215c6b9abaa19df7f99f
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      # Comparator must be the first process that builds Solution.  The
+      # Mathlib cache is trusted dependency data; no project build cache is
+      # restored and the ordinary project build is not run in this job.
+      - name: Set up Lean and trusted Mathlib cache
+        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
+        with:
+          auto-config: false
+          build: false
+          test: false
+          lint: false
+          use-github-cache: false
+          use-mathlib-cache: true
+
+      - name: Set up Go
+        uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
+        with:
+          go-version: "1.24.0"
+          cache: false
+
+      - name: Install pinned landrun
+        shell: bash
+        run: |
+          set -euo pipefail
+          go install "github.com/zouuup/landrun/cmd/landrun@$LANDRUN_COMMIT"
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
+      - name: Build pinned checking tools
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test ! -e .lake/build/lib/lean/Solution.olean
+          test ! -e .lake/build/lib/lean/Solution.ilean
+
+          checker_dir="$RUNNER_TEMP/Comparator"
+          git clone --filter=blob:none \
+            https://github.com/leanprover/comparator.git "$checker_dir"
+          git -C "$checker_dir" checkout --detach "$COMPARATOR_COMMIT"
+
+          # The Comparator tag's manifest still points to a pre-release
+          # lean4export snapshot.  Pin both its parser dependency and the
+          # executable to the final lean4export v4.28.0 commit.
+          grep -Fq "$COMPARATOR_MANIFEST_LEAN4EXPORT" \
+            "$checker_dir/lake-manifest.json"
+          sed -i \
+            "s/$COMPARATOR_MANIFEST_LEAN4EXPORT/$LEAN4EXPORT_COMMIT/" \
+            "$checker_dir/lake-manifest.json"
+          grep -Fq "\"rev\": \"$LEAN4EXPORT_COMMIT\"" \
+            "$checker_dir/lake-manifest.json"
+          test "$(git -C "$checker_dir" diff --name-only)" = \
+            "lake-manifest.json"
+
+          mkdir -p "$checker_dir/.lake/packages"
+          git clone --filter=blob:none \
+            https://github.com/leanprover/lean4export.git \
+            "$checker_dir/.lake/packages/lean4export"
+          git -C "$checker_dir/.lake/packages/lean4export" \
+            checkout --detach "$LEAN4EXPORT_COMMIT"
+
+          git clone --filter=blob:none \
+            https://github.com/leanprover/lean4checker.git \
+            "$checker_dir/.lake/packages/Lean4Checker"
+          git -C "$checker_dir/.lake/packages/Lean4Checker" \
+            checkout --detach "$LEAN4CHECKER_COMMIT"
+
+          (
+            cd "$checker_dir"
+            lake build comparator lean4export
+          )
+
+          test "$(git -C "$checker_dir" rev-parse HEAD)" = \
+            "$COMPARATOR_COMMIT"
+          test "$(git -C "$checker_dir/.lake/packages/lean4export" rev-parse HEAD)" = \
+            "$LEAN4EXPORT_COMMIT"
+          test "$(git -C "$checker_dir/.lake/packages/Lean4Checker" rev-parse HEAD)" = \
+            "$LEAN4CHECKER_COMMIT"
+          test -x "$checker_dir/.lake/build/bin/comparator"
+          test -x "$checker_dir/.lake/packages/lean4export/.lake/build/bin/lean4export"
+
+          echo "$checker_dir/.lake/build/bin" >> "$GITHUB_PATH"
+          echo "$checker_dir/.lake/packages/lean4export/.lake/build/bin" \
+            >> "$GITHUB_PATH"
+
+          test ! -e .lake/build/lib/lean/Solution.olean
+          test ! -e .lake/build/lib/lean/Solution.ilean
+
+      - name: Verify trusted inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          jq -e '
+            .challenge_module == "Challenge" and
+            .solution_module == "Solution" and
+            .theorem_names == ["allender_oq3_challenge"] and
+            (.permitted_axioms | sort) ==
+              (["propext", "Quot.sound", "Classical.choice"] | sort) and
+            .enable_nanoda == false and
+            (keys | sort) == ([
+              "challenge_module",
+              "solution_module",
+              "theorem_names",
+              "permitted_axioms",
+              "enable_nanoda"
+            ] | sort)
+          ' comparator/config.json
+
+          test "$(grep -c '^import ' Challenge.lean)" -eq 1
+          grep -Fx 'import Mathlib' Challenge.lean
+          ! grep -Eq '^import AllenderOQ3' Challenge.lean
+          test "$(grep -Ec '^[[:space:]]*sorry[[:space:]]*$' Challenge.lean)" -eq 1
+          ! grep -Eq '\b(axiom|admit|unsafe|implemented_by|native_decide)\b|set_option maxHeartbeats 0' Challenge.lean
+          grep -F 'turing_candidate_000003' Solution.lean
+
+          # The trusted statement must be character-identical to the project
+          # interface it claims to copy.
+          python3 scripts/check_challenge_matches_model.py
+
+      # Probe the exact Landlock policy used by Comparator v4.28.0.  Fail
+      # closed if --best-effort silently weakens the requested sandbox.
+      - name: Verify landrun sandbox
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          probe_id="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          outside_workspace="$GITHUB_WORKSPACE/.comparator-landrun-$probe_id"
+          outside_tmp="/tmp/comparator-landrun-$probe_id"
+          escape_target="$RUNNER_TEMP/comparator-landrun-escape-$probe_id"
+          inside="$GITHUB_WORKSPACE/.lake/comparator-landrun-$probe_id"
+          escape_link="$GITHUB_WORKSPACE/.lake/comparator-landrun-link-$probe_id"
+
+          cleanup() {
+            rm -f "$outside_workspace" "$outside_tmp" "$escape_target" \
+              "$inside" "$escape_link"
+          }
+          trap cleanup EXIT
+          cleanup
+          ln -s "$RUNNER_TEMP" "$escape_link"
+
+          lean_prefix="$(lean --print-prefix)"
+          git_bin="$(command -v git)"
+          landrun_args=(
+            --best-effort
+            --ro /
+            --rw /dev
+            -ldd
+            -add-exec
+            --ro "$GITHUB_WORKSPACE"
+            --rwx "$GITHUB_WORKSPACE/.lake"
+            --rox "$lean_prefix"
+            --rox "$git_bin"
+          )
+
+          deny_write() {
+            local target="$1"
+            if landrun "${landrun_args[@]}" /usr/bin/touch "$target"; then
+              echo "::error::landrun allowed a forbidden write to $target"
+              exit 1
+            fi
+          }
+
+          deny_write "$outside_workspace"
+          deny_write "$outside_tmp"
+          deny_write "$escape_link/$(basename "$escape_target")"
+
+          landrun "${landrun_args[@]}" /usr/bin/python3 -c '
+          import os
+          try:
+              os.execv("/bin/sh", ["/bin/sh", "-c", "exit 97"])
+          except PermissionError:
+              raise SystemExit(0)
+          except OSError as error:
+              print(f"unexpected exec error: {error}")
+              raise SystemExit(2)
+          raise SystemExit(3)
+          '
+
+          landrun "${landrun_args[@]}" /usr/bin/touch "$inside"
+          test -f "$inside"
+          test ! -e "$outside_workspace"
+          test ! -e "$outside_tmp"
+          test ! -e "$escape_target"
+
+      - name: Compare Challenge and Solution
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test ! -e .lake/build/lib/lean/Solution.olean
+          test ! -e .lake/build/lib/lean/Solution.ilean
+
+          systemd_base=(
+            sudo systemd-run
+            --quiet
+            --wait
+            --pipe
+            --collect
+            --service-type=exec
+            --uid="$(id -u)"
+            --gid="$(id -g)"
+            --property=NoNewPrivileges=yes
+            --property=PrivateNetwork=yes
+            --property='RestrictAddressFamilies=~AF_UNIX'
+          )
+
+          # Fail unless systemd enforces the additional AF_UNIX mitigation.
+          "${systemd_base[@]}" /usr/bin/python3 -c '
+          import socket
+          try:
+              socket.socket(socket.AF_UNIX)
+          except OSError:
+              raise SystemExit(0)
+          raise SystemExit(1)
+          '
+
+          lake_bin="$(command -v lake)"
+          comparator_bin="$RUNNER_TEMP/Comparator/.lake/build/bin/comparator"
+
+          "${systemd_base[@]}" \
+            --setenv=HOME="$HOME" \
+            --setenv=PATH="$PATH" \
+            --working-directory="$GITHUB_WORKSPACE" \
+            "$lake_bin" env "$comparator_bin" \
+            "$GITHUB_WORKSPACE/comparator/config.json"

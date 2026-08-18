@@ -1,0 +1,31 @@
+name: Lean
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-and-audit:
+    name: Build and check axioms
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build-args: AllenderOQ3 Challenge Solution
+          test: false
+          lint: false
+      - name: Challenge copies the project interface verbatim
+        run: python3 scripts/check_challenge_matches_model.py
+      - name: No `sorry` in the project sources
+        run: python3 scripts/check_no_sorry.py
+      - name: Axiom report
+        shell: bash
+        run: |
+          set -euo pipefail
+          lake env lean Main.lean | tee axiom_report.txt
+          grep -Fq "'turing_candidate_000003' depends on axioms: [propext, Classical.choice, Quot.sound]" \
+            axiom_report.txt
+          ! grep -q sorryAx axiom_report.txt
