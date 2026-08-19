@@ -1,47 +1,60 @@
-# Formalization plan
+# Formalization architecture
 
-The frozen API consists of `Model.lean`, `Incidence.lean`,
-`ExternalFacts.lean`, and `Statement.lean`.  If an inconsistency is found there, stop with
-`INTERFACE_PROBLEM`; do not silently weaken it.
+The Lean development is complete: the project library contains no `sorry`, and
+the headline theorem uses only Lean's standard axioms `propext`,
+`Classical.choice`, and `Quot.sound`.  This file records the proof architecture
+rather than an unfinished work plan.
 
-The main proof is conditional on `QuantitativeCylindricalACCPrinciple`.  Finish
-that proof first.  The optional transfer from the Barrington--Therien
-solvable-monoid word theorem to this geometric/incidence-order principle is a
-separate post-main project and must not block or redirect the main pipeline.
+## Trusted interface
 
-Suggested dependency order:
+The exact circuit model and theorem statement are concentrated in:
 
-1. deterministic ADR valuation and ancestor pruning;
-2. translate the pruned occupied layer interval to start at zero and prove
-   that its span is at most the gate count (never iterate up to a sparse raw
-   `Nat` layer label);
-3. finite permutation/orbit lemmas for rotations and faces;
-4. edge-deletion surgery, component defect sums, and the genus budget;
-5. greedy packing/piercing for integer intervals;
-6. the layer-planarizer theorem;
-7. fixed-width slot states and one-step relations;
-8. exact half-open cut decomposition;
-9. restriction of incidence certificates and the N4 refinement construction,
-   encoding every paper COPY as unary OR and every Boolean constant as a
-   nullary AND/OR in the actual `ADRCircuit` syntax;
-10. planar-width induction and predecessor-closed external ancestor circuits,
-    with the explicit size/depth recurrence from the mathematical proof;
-11. beta circuits plus an exact fresh-input substitution lemma: finite-sum
-    input reindexing, separate positive-copy/negative-NOT occurrences, layer
-    shifting, semantics, depth, and polynomial size;
-12. common-modulus lifting with distinct shared unary copies;
-13. polylogarithmic finite-state relation composition, including the explicit
-    large-`n` cutoff for the `k+1` blocking rounds;
-14. small input lengths and final family assembly.
+- `AllenderOQ3/Model.lean`;
+- `AllenderOQ3/Incidence.lean`;
+- `AllenderOQ3/Principles.lean`;
+- `AllenderOQ3/Statement.lean`.
 
-The final internal theorem must be:
+Their checksums are recorded in `proof_loop/frozen_api.sha256`.  The three
+principle signatures remain visible in the API, but all three implementations
+in `AllenderOQ3/ExternalFacts.lean` are now proved inside the project.
 
-```lean
-theorem turing_candidate_000003_of_principles :
-    AllenderOQ3ConditionalStatement := by
-  intro hRotation hHansen hCylinderACC
-  ...
+## Proof layers
+
+1. **Circuit semantics and normalization.**  The development formalizes ADR
+   valuation, ancestor pruning, occupied-layer compression, output restriction,
+   and total-width bookkeeping.
+2. **Genus and planarization.**  Rotation systems, orbit counts, edge-deletion
+   surgery, the Euler defect, interval piercing, and the layer planarizer turn
+   the genus bound into a bounded collection of planar blocks and exceptional
+   transitions.
+3. **Planar blocks.**  A bridge-safe necklace construction proves the Hansen
+   arc-incidence-order principle for properly layered planar st-circuits.
+4. **Cylindrical normalization.**  The N4 refinement, fan-in reduction, port
+   circuits, and exact substitution lemmas preserve semantics, incidence
+   certificates, depth, width, and polynomial size.
+5. **Finite-monoid evaluation.**  Rather than formalizing the full
+   Barrington--Therien theorem, the Lean proof establishes the needed special
+   case directly.  Certified layer maps have abelian local groups, and a
+   local-divisor induction constructs the required `ACC^0` word evaluator.
+6. **Composition and family assembly.**  Constant-depth relation composition,
+   modulus lifting, the large-input cutoff, and the finitely many small input
+   lengths yield the final nonuniform family.
+
+The public theorem `turing_candidate_000003_of_principles` exposes the three
+principle inputs.  The wrapper `turing_candidate_000003` supplies their proved
+implementations.
+
+## Verification
+
+Run the complete local release audit with:
+
+```bash
+lake build
+bash scripts/audit_release.sh
 ```
 
-It should have no project-specific axioms when checked by `#print axioms`;
-the proved attainment principle and the two permanent obligations enter only in the final wrapper.
+`Challenge.lean` intentionally contains one placeholder theorem: it is the
+standalone statement consumed by `leanprover/comparator`, not a dependency of
+the project proof.  `Solution.lean` closes that exact statement, and the
+Comparator workflow checks the exported proof against the permitted axiom
+set.

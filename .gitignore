@@ -2,12 +2,10 @@
 __pycache__/
 *.py[cod]
 
-# Local proof-loop runtime state.
-proof_loop/ACTIVE_RUN
-proof_loop/COMPLETE.oq3
-proof_loop/MERGE_GATE.lock
-proof_loop/MERGE_JOURNAL.json
-proof_loop/PAUSE
-proof_loop/PAUSE.*
-proof_loop/RUNNER.lock
-proof_loop/RUNNER_PID
+# LaTeX build products; the released PDF is tracked explicitly.
+paper/*.aux
+paper/*.fdb_latexmk
+paper/*.fls
+paper/*.log
+paper/*.out
+paper/*.toc

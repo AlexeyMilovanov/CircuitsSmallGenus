@@ -1,5 +1,0 @@
--- Cleared in iteration 8 (02_opus).
---
--- Duplicate scratch statement of a `dedup`-cyclic-rotation lemma (also appeared
--- in ListingRotation.lean and DedupRotation.lean).  Never imported by the
--- AllenderOQ3 roll-up; carried only an unproved placeholder.  Left empty.
