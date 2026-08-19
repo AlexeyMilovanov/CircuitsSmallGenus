@@ -4,6 +4,7 @@ set -euo pipefail
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$repo"
 
+python3 scripts/check_challenge_matches_model.py
 python3 scripts/check_trust.py --release --require-no-external
 bash scripts/audit.sh
 

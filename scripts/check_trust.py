@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 EXTERNAL = Path("AllenderOQ3/ExternalFacts.lean")
 TARGET = Path("AllenderOQ3/Target.lean")
 INTERNAL_PREFIX = "AllenderOQ3/Internal/"
+COMPARATOR_CHALLENGE = Path("Challenge.lean")
 FROZEN_MANIFEST = Path("proof_loop/frozen_api.sha256")
 
 EXPECTED_EXTERNAL = (
@@ -111,6 +112,7 @@ def audit(root: Path, release: bool, require_no_external: bool = False) -> dict[
     errors: list[str] = []
     external_sorries: list[str] = []
     internal_sorries: list[str] = []
+    challenge_sorries: list[str] = []
 
     for path in lean_files(root):
         rel = path.relative_to(root).as_posix()
@@ -129,8 +131,24 @@ def audit(root: Path, release: bool, require_no_external: bool = False) -> dict[
                 external_sorries.append(location)
             elif rel == TARGET.as_posix() or rel.startswith(INTERNAL_PREFIX):
                 internal_sorries.append(location)
+            elif rel == COMPARATOR_CHALLENGE.as_posix():
+                challenge_sorries.append(location)
             else:
                 errors.append(f"sorry outside the permitted files: {location}")
+
+    challenge_code = strip_comments_and_strings(
+        (root / COMPARATOR_CHALLENGE).read_text(encoding="utf-8")
+    )
+    challenge_body = re.search(
+        r"theorem\s+allender_oq3_challenge\s*:\s*"
+        r"AllenderOQ3Statement\s*:=\s*by\s+sorry\b",
+        challenge_code,
+        flags=re.DOTALL,
+    )
+    if len(challenge_sorries) != 1 or challenge_body is None:
+        errors.append(
+            "Challenge.lean must contain exactly the comparator's one theorem placeholder"
+        )
 
     external_path = root / EXTERNAL
     external_code = strip_comments_and_strings(external_path.read_text(encoding="utf-8"))
@@ -210,6 +228,7 @@ def audit(root: Path, release: bool, require_no_external: bool = False) -> dict[
         "require_no_external": require_no_external,
         "external_sorries": external_sorries,
         "internal_sorries": internal_sorries,
+        "challenge_sorries": challenge_sorries,
         "errors": errors,
     }
 

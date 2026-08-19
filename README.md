@@ -1,8 +1,23 @@
-# Allender OQ3 in Lean 4.28
+# Circuits of Small Genus
 
-This project formalizes the corrected version of Allender's Open Question 3:
-constant-computation-width layered circuits of polylogarithmic orientable genus
-have nonuniform `ACC^0` simulations.
+This repository contains the paper and an axiom-clean Lean 4.28 formalization
+of the corrected version of Allender's Open Question 3: constant-computation-
+width layered circuits of polylogarithmic orientable genus have nonuniform
+`ACC^0` simulations.
+
+## Paper
+
+- [PDF](paper/small-genus-circuits.pdf)
+- [LaTeX source](paper/small-genus-circuits.tex)
+
+To rebuild the paper with a standard TeX Live installation:
+
+```bash
+cd paper
+latexmk -pdf -interaction=nonstopmode -halt-on-error small-genus-circuits.tex
+```
+
+## Lean formalization
 
 The exact audited circuit model is in `AllenderOQ3/Model.lean`.  The target is
 `turing_candidate_000003` in `AllenderOQ3/Target.lean`.
@@ -52,22 +67,5 @@ Read, in order:
 
 ```bash
 lake build
-bash scripts/audit.sh
+bash scripts/audit_release.sh
 ```
-
-The proof pipeline is deliberately not started by default:
-
-```bash
-python3 scripts/run_proof_pipeline.py --list-sections
-python3 scripts/run_proof_pipeline.py \
-  --section oq3 --iterations 1 --start-iteration 1 --dry-run
-```
-
-The production conveyor is Gemini 3.1 Pro High, then a separate Claude CLI
-pinned to `claude-opus-4-8`, then Aristotle.  Iterations `1, 6, 11, ...` are
-strategy-only and plan the following four proof iterations.
-
-After explicit approval, start it with `scripts/launch_pipeline.sh`.  If the
-process is interrupted, `scripts/resume_pipeline.sh` reuses `ACTIVE_RUN`,
-polls any already-submitted Aristotle project instead of resubmitting it, and
-continues with the original global iteration numbers.
