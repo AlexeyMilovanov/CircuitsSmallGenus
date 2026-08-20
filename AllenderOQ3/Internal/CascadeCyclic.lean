@@ -1,6 +1,6 @@
 import AllenderOQ3.Internal.ACCCyclicWord
 import AllenderOQ3.Internal.ACCJoin
-import Mathlib
+import AllenderOQ3.Base
 
 set_option autoImplicit false
 set_option linter.style.longLine false
@@ -12,7 +12,7 @@ variable {n m : Nat}
 theorem cascade_cyclic_layer {N : Nat} (hm : 0 < m) (hNm : N ∣ m)
     {G : Type} [Monoid G] (g0 : G) (hg0 : g0 ^ N = 1)
     {len size_letter size_driver d : Nat}
-    {L Y : Type} [Fintype L] [Fintype Y] [DecidableEq L] [DecidableEq Y]
+    {L Y : Type} [Fintype L] [Fintype Y]
     (letter : Fin len → (Fin n → Bool) → L)
     (driver : Fin len → (Fin n → Bool) → Y)
     (kappa : L → Y → Fin N)

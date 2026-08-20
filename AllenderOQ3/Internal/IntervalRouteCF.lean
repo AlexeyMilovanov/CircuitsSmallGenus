@@ -113,8 +113,8 @@ section LocalUnits
 variable {e a a' : TransMonoid w}
 
 /-- A local unit maps the piece family into itself. -/
-theorem mapsTo_intervalFamily (he : e ∈ NonCrossingCF w) (ha : a ∈ NonCrossingCF w)
-    (ha' : a' ∈ NonCrossingCF w) (hee : e * e = e) (hae : a * e = a)
+theorem mapsTo_intervalFamily (ha : a ∈ NonCrossingCF w)
+    (ha' : a' ∈ NonCrossingCF w) (hae : a * e = a)
     (haa' : a * a' = e) {I : Config w} (hI : I ∈ intervalFamily (fixFinset e)) :
     runTrans a I ∈ intervalFamily (fixFinset e) := by
   obtain ⟨x, hx, hIx⟩ := mem_intervalFamily.mp hI
@@ -135,7 +135,7 @@ theorem bijOn_intervalFamily_of_localUnit (he : e ∈ NonCrossingCF w)
   refine ⟨?_, ?_, ?_⟩
   · intro I hI
     exact Finset.mem_coe.mpr
-      (mapsTo_intervalFamily he ha ha' hee hae haa' (Finset.mem_coe.mp hI))
+      (mapsTo_intervalFamily ha ha' hae haa' (Finset.mem_coe.mp hI))
   · intro I hI J hJ hIJ
     have hIe : I ∈ fixFinset e := hsub (Finset.mem_coe.mp hI)
     have hJe : J ∈ fixFinset e := hsub (Finset.mem_coe.mp hJ)
@@ -147,7 +147,7 @@ theorem bijOn_intervalFamily_of_localUnit (he : e ∈ NonCrossingCF w)
     have hJe : J ∈ fixFinset e := hsub hJ'
     refine ⟨runTrans a' J, ?_, ?_⟩
     · exact Finset.mem_coe.mpr
-        (mapsTo_intervalFamily he ha' ha hee ha'e ha'a hJ')
+        (mapsTo_intervalFamily ha' ha ha'e ha'a hJ')
     · exact runTrans_local_inv (a := a') (a' := a) ha'a hJe
 
 end LocalUnits
@@ -181,9 +181,9 @@ theorem cfLocalUnitsCommute_of_intervalAntichains
     (he : e ∈ NonCrossingCF w) (ha : a ∈ NonCrossingCF w) (ha' : a' ∈ NonCrossingCF w)
     (hb : b ∈ NonCrossingCF w) (hb' : b' ∈ NonCrossingCF w)
     (hee : e * e = e)
-    (hea : e * a = a) (hae : a * e = a) (hea' : e * a' = a') (ha'e : a' * e = a')
+    (hea : e * a = a) (hae : a * e = a) (ha'e : a' * e = a')
     (haa' : a * a' = e) (ha'a : a' * a = e)
-    (heb : e * b = b) (hbe : b * e = b) (heb' : e * b' = b') (hb'e : b' * e = b')
+    (heb : e * b = b) (hbe : b * e = b) (hb'e : b' * e = b')
     (hbb' : b * b' = e) (hb'b : b' * b = e) :
     a * b = b * a := by
   set F : Finset (Config w) := intervalFamily (fixFinset e) with hF
@@ -293,7 +293,7 @@ theorem cfLocalUnitsCommute_holds (hgeo : IntervalAntichainsCommuteCF w) :
     CFLocalUnitsCommute w := by
   intro e a a' b b' he ha ha' hb hb' hee hea hae hea' ha'e haa' ha'a heb hbe heb' hb'e hbb' hb'b
   exact cfLocalUnitsCommute_of_intervalAntichains hgeo he ha ha' hb hb' hee
-    hea hae hea' ha'e haa' ha'a heb hbe heb' hb'e hbb' hb'b
+    hea hae ha'e haa' ha'a heb hbe hb'e hbb' hb'b
 
 /- T5 (constant elimination) lives in `ConstantElimination.lean`: the
 conjugation glue `localUnitsCommute_of_cf_glue` is proved there, with two

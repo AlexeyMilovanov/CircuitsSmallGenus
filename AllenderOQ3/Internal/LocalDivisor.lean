@@ -75,7 +75,7 @@ theorem mul_val {p q : LocalDivisor c} {x : M} (hx : p.val = x * c) :
     (p * q).val = x * q.val := by
   obtain ⟨q', hq'⟩ := q.2.1
   have hch : p.val = Classical.choose p.2.2 * c := Classical.choose_spec p.2.2
-  show Classical.choose p.2.2 * q.val = x * q.val
+  change Classical.choose p.2.2 * q.val = x * q.val
   calc Classical.choose p.2.2 * q.val
       = Classical.choose p.2.2 * (c * q') := by rw [← hq']
     _ = (Classical.choose p.2.2 * c) * q' := (mul_assoc _ _ _).symm
@@ -89,7 +89,7 @@ argument. -/
 theorem mul_val' {p q : LocalDivisor c} {y : M} (hy : q.val = c * y) :
     (p * q).val = p.val * y := by
   have hch : p.val = Classical.choose p.2.2 * c := Classical.choose_spec p.2.2
-  show Classical.choose p.2.2 * q.val = p.val * y
+  change Classical.choose p.2.2 * q.val = p.val * y
   calc Classical.choose p.2.2 * q.val
       = Classical.choose p.2.2 * (c * y) := by rw [← hy]
     _ = (Classical.choose p.2.2 * c) * y := (mul_assoc _ _ _).symm
@@ -188,7 +188,7 @@ theorem localDivisorHom_surjective (c : M) :
   refine ⟨⟨u, ⟨v, ?_⟩⟩, ?_⟩
   · rw [← hu, hv]
   · apply Subtype.ext
-    show c * u = z.val
+    change c * u = z.val
     rw [← hu]
 
 /-- "All subgroups abelian" passes to the local divisor (modulo the open leaf

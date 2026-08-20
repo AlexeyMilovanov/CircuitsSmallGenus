@@ -1,4 +1,4 @@
-import Mathlib
+import AllenderOQ3.Base
 
 /-!
 # Bounded change count gives a bounded block decomposition

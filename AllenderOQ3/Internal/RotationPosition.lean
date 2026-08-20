@@ -6,7 +6,8 @@ namespace AllenderOQ3.Internal
 
 variable {n w : Nat} (c : ADRCircuit n) (cert : IncidenceCylinder c)
 
-/-- C1: If L is a cyclic rotation of a full layer listing, its coordinates are a cyclic rotation of finRange. -/
+/-- C1: If L is a cyclic rotation of a full layer listing, its coordinates are a cyclic
+rotation of finRange. -/
 theorem rotation_position_inversion {ell : Nat}
     (hfull : (cert.layerOrder ell).entries.length = w)
     {L : List (LayerVertex c ell)}
@@ -16,9 +17,11 @@ theorem rotation_position_inversion {ell : Nat}
     entries_eq_map_vtxAt ell hfull
   have h2 : (cert.layerOrder ell).entries ~r L := (cyclicRotation_iff_isRotated _ _).mp hrot
   rw [h1] at h2
-  have h3 : ((List.finRange w).map (vtxAt c cert ell hfull)).map (idxOfVtx c cert ell hfull.le) ~r L.map (idxOfVtx c cert ell hfull.le) :=
+  have h3 : ((List.finRange w).map (vtxAt c cert ell hfull)).map (idxOfVtx c cert ell hfull.le)
+      ~r L.map (idxOfVtx c cert ell hfull.le) :=
     h2.map _
-  have h4 : ((List.finRange w).map (vtxAt c cert ell hfull)).map (idxOfVtx c cert ell hfull.le) = List.finRange w := by
+  have h4 : ((List.finRange w).map (vtxAt c cert ell hfull)).map (idxOfVtx c cert ell hfull.le)
+      = List.finRange w := by
     apply List.ext_getElem
     · simp
     · intro i hi1 hi2
@@ -36,7 +39,8 @@ theorem rotation_position_interval {ell : Nat}
     ∃ (start : Fin w) (d : Nat),
       idxOfVtx c cert ell hfull.le v1 = start ∧
       idxOfVtx c cert ell hfull.le v2 = finShift (d + 1) start ∧
-      T2'.map (idxOfVtx c cert ell hfull.le) = (List.range T2'.length).map (fun k => finShift (k + 1) start) ∧
+      T2'.map (idxOfVtx c cert ell hfull.le)
+        = (List.range T2'.length).map (fun k => finShift (k + 1) start) ∧
       d = T2'.length := by
   have h_inv := rotation_position_inversion c cert hfull hrot
   rcases h_inv with ⟨r, hr⟩
@@ -48,25 +52,26 @@ theorem rotation_position_interval {ell : Nat}
     rw [← hlen]
     simp
   set s : Fin w := ⟨r % w, Nat.mod_lt _ hw⟩
-  have h_rot_eq : (List.finRange w).rotate r = (List.finRange w).map (fun k => finShift k.val s) := by
+  have h_rot_eq :
+      (List.finRange w).rotate r = (List.finRange w).map (fun k => finShift k.val s) := by
     have h_mod : (List.finRange w).rotate r = (List.finRange w).rotate s.val := by
       have hl : w = (List.finRange w).length := by simp
-      have h_mod' : (List.finRange w).rotate (r % (List.finRange w).length) = (List.finRange w).rotate r := List.rotate_mod _ _
+      have h_mod' : (List.finRange w).rotate (r % (List.finRange w).length)
+          = (List.finRange w).rotate r := List.rotate_mod _ _
       rw [← hl] at h_mod'
       exact h_mod'.symm
     rw [h_mod, rotate_finRange_eq]
   rw [h_rot_eq] at hr
-
-  have h_get_eq : ∀ (i : Nat), (List.map (idxOfVtx c cert ell hfull.le) (v1 :: T2' ++ v2 :: T3'))[i]? = 
-                       ((List.finRange w).map (fun k => finShift k.val s))[i]? := by
+  have h_get_eq : ∀ (i : Nat),
+      (List.map (idxOfVtx c cert ell hfull.le) (v1 :: T2' ++ v2 :: T3'))[i]?
+        = ((List.finRange w).map (fun k => finShift k.val s))[i]? := by
     intro i
     rw [hr]
-
   use s, T2'.length
-
   have h1 : idxOfVtx c cert ell hfull.le v1 = s := by
     have h0 := h_get_eq 0
-    have hl_simp : (List.map (idxOfVtx c cert ell hfull.le) (v1 :: T2' ++ v2 :: T3'))[0]? = some (idxOfVtx c cert ell hfull.le v1) := by rfl
+    have hl_simp : (List.map (idxOfVtx c cert ell hfull.le) (v1 :: T2' ++ v2 :: T3'))[0]?
+        = some (idxOfVtx c cert ell hfull.le v1) := by rfl
     rw [hl_simp] at h0
     have hz : ((List.finRange w).map (fun k => finShift k.val s))[0]? = some (finShift 0 s) := by
       rw [List.getElem?_map]
@@ -81,19 +86,20 @@ theorem rotation_position_interval {ell : Nat}
     have h0' := Option.some.inj h0
     rw [finShift_zero] at h0'
     exact h0'
-
   have hz_range_k (i : Nat) (hi : i < w) : (List.finRange w)[i]? = some ⟨i, hi⟩ := by
     apply List.getElem?_eq_getElem (by simp [hi]) |>.trans
     congr
     apply Fin.eq_of_val_eq
     simp
-
   have h2 : idxOfVtx c cert ell hfull.le v2 = finShift (T2'.length + 1) s := by
     have hd := h_get_eq (T2'.length + 1)
-    have hl_simp : (List.map (idxOfVtx c cert ell hfull.le) (v1 :: T2' ++ v2 :: T3'))[T2'.length + 1]? = some (idxOfVtx c cert ell hfull.le v2) := by
+    have hl_simp :
+        (List.map (idxOfVtx c cert ell hfull.le) (v1 :: T2' ++ v2 :: T3'))[T2'.length + 1]?
+          = some (idxOfVtx c cert ell hfull.le v2) := by
       rw [List.getElem?_map]
       have hget : (v1 :: T2' ++ v2 :: T3')[T2'.length + 1]? = some v2 := by
-        have h_step1 : (v1 :: T2' ++ v2 :: T3')[T2'.length + 1]? = (T2' ++ v2 :: T3')[T2'.length]? := rfl
+        have h_step1 : (v1 :: T2' ++ v2 :: T3')[T2'.length + 1]?
+            = (T2' ++ v2 :: T3')[T2'.length]? := rfl
         rw [h_step1]
         rw [List.getElem?_append_right (by simp)]
         have hs : T2'.length - T2'.length = 0 := Nat.sub_self _
@@ -103,22 +109,26 @@ theorem rotation_position_interval {ell : Nat}
       rfl
     rw [hl_simp] at hd
     have hT2_lt : T2'.length + 1 < w := by
-      have h_len2 : (v1 :: T2' ++ v2 :: T3').length = 1 + T2'.length + 1 + T3'.length := by simp; omega
+      have h_len2 : (v1 :: T2' ++ v2 :: T3').length = 1 + T2'.length + 1 + T3'.length := by
+        simp; omega
       rw [h_len2] at hlen
       omega
-    have hR : ((List.finRange w).map (fun k => finShift k.val s))[T2'.length + 1]? = some (finShift (T2'.length + 1) s) := by
+    have hR : ((List.finRange w).map (fun k => finShift k.val s))[T2'.length + 1]?
+        = some (finShift (T2'.length + 1) s) := by
       rw [List.getElem?_map, hz_range_k _ hT2_lt]
       rfl
     rw [hR] at hd
     exact Option.some.inj hd
   
-  have h3 : T2'.map (idxOfVtx c cert ell hfull.le) = (List.range T2'.length).map (fun k => finShift (k + 1) s) := by
+  have h3 : T2'.map (idxOfVtx c cert ell hfull.le)
+      = (List.range T2'.length).map (fun k => finShift (k + 1) s) := by
     apply List.ext_getElem
     · simp
     · intro i hi1 hi2
       have hi : i < T2'.length := by simpa using hi1
       have hi_get := h_get_eq (i + 1)
-      have hl_simp : (List.map (idxOfVtx c cert ell hfull.le) (v1 :: T2' ++ v2 :: T3'))[i + 1]? = some (idxOfVtx c cert ell hfull.le (T2'[i]'hi)) := by
+      have hl_simp : (List.map (idxOfVtx c cert ell hfull.le) (v1 :: T2' ++ v2 :: T3'))[i + 1]?
+          = some (idxOfVtx c cert ell hfull.le (T2'[i]'hi)) := by
         rw [List.getElem?_map]
         have hget : (v1 :: T2' ++ v2 :: T3')[i + 1]? = some (T2'[i]'hi) := by
           have h_step1 : (v1 :: T2' ++ v2 :: T3')[i + 1]? = (T2' ++ v2 :: T3')[i]? := rfl
@@ -130,16 +140,20 @@ theorem rotation_position_interval {ell : Nat}
         rfl
       rw [hl_simp] at hi_get
       have hT2_lt : i + 1 < w := by
-        have h_len2 : (v1 :: T2' ++ v2 :: T3').length = 1 + T2'.length + 1 + T3'.length := by simp; omega
+        have h_len2 : (v1 :: T2' ++ v2 :: T3').length = 1 + T2'.length + 1 + T3'.length := by
+          simp; omega
         rw [h_len2] at hlen
         omega
-      have hR : ((List.finRange w).map (fun k => finShift k.val s))[i + 1]? = some (finShift (i + 1) s) := by
+      have hR : ((List.finRange w).map (fun k => finShift k.val s))[i + 1]?
+          = some (finShift (i + 1) s) := by
         rw [List.getElem?_map, hz_range_k _ hT2_lt]
         rfl
       rw [hR] at hi_get
       have hi_get' := Option.some.inj hi_get
-      have hL2 : (T2'.map (idxOfVtx c cert ell hfull.le))[i]'hi1 = idxOfVtx c cert ell hfull.le (T2'[i]'hi) := by simp
-      have hR2 : ((List.range T2'.length).map (fun k => finShift (k + 1) s))[i]'hi2 = finShift (i + 1) s := by
+      have hL2 : (T2'.map (idxOfVtx c cert ell hfull.le))[i]'hi1
+          = idxOfVtx c cert ell hfull.le (T2'[i]'hi) := by simp
+      have hR2 : ((List.range T2'.length).map (fun k => finShift (k + 1) s))[i]'hi2
+          = finShift (i + 1) s := by
         rw [List.getElem_map]
         simp
       rw [hL2, hR2, hi_get']

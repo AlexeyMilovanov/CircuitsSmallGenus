@@ -54,7 +54,8 @@ def InitState {c : ADRCircuit n} (idx : LayerIndexing c w) (x : Fin n → Bool)
     (t : State w) : Prop :=
   (∀ g, (c.kind g).isComputation = true → c.layer g = 0 →
       (t (idx.slot g) = true ↔ GateStepValue idx x (fun _ => false) g)) ∧
-  (∀ j : Fin w, (¬ ∃ g, (c.kind g).isComputation = true ∧ c.layer g = 0 ∧ idx.slot g = j) → t j = false)
+  (∀ j : Fin w, (¬ ∃ g, (c.kind g).isComputation = true ∧ c.layer g = 0 ∧ idx.slot g = j) → t j =
+    false)
 
 /-- The initial configuration is unique. -/
 theorem initState_deterministic {c : ADRCircuit n} (idx : LayerIndexing c w)

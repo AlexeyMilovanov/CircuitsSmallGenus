@@ -451,21 +451,27 @@ open Classical in
 theorem accAccepts_accJoin_mod (hf : ∀ i, WellFormedACC (f i))
     (hd : ∀ (i : Fin k) (a : Fin (f i).gateCount), (f i).layer a ≤ d)
     (x : Fin n → Bool) :
-    ACCAccepts (accJoin f d .modGate) x ↔ (Finset.univ.filter fun i => ACCAccepts (f i) x).card % m = 0 := by
+    ACCAccepts (accJoin f d .modGate) x ↔ (Finset.univ.filter fun i => ACCAccepts (f i) x).card % m
+      = 0 := by
   have hlit : ∀ (i : Fin n) (b : Bool), (ACCGate.modGate : ACCGate n m) ≠ .literal i b := by
     intro i b; simp
   have hnot : (ACCGate.modGate : ACCGate n m) ≠ .notGate := by simp
   classical
-  set r : Bool := decide ((Finset.univ.filter fun i => evalACC (f i) (hf i) x (f i).output = true).card % m = 0) with hrdef
+  set r : Bool := decide
+    ((Finset.univ.filter fun i => evalACC (f i) (hf i) x (f i).output = true).card % m = 0) with
+    hrdef
   have hr : RootSpec f (ACCGate.modGate : ACCGate n m) x (fun i => evalACC (f i) (hf i) x) r := by
     rw [RootSpec, hrdef]; simp
-  have hr' : (r = true ↔ (Finset.univ.filter fun i => evalACC (f i) (hf i) x (f i).output = true).card % m = 0) := by
+  have hr' :
+    (r = true ↔ (Finset.univ.filter fun i => evalACC (f i) (hf i) x (f i).output = true).card % m =
+    0) := by
     rw [hrdef]; simp
   rw [accAccepts_iff (wellFormedACC_accJoin hf hd hlit hnot) x]
   rw [evalACC_accJoin_block hf hd hlit hnot x (r := r) hr]
   rw [accJoin_output, joinValue_root]
   rw [hr']
-  have eq_filter : (Finset.univ.filter fun i => evalACC (f i) (hf i) x (f i).output = true) = Finset.univ.filter fun i => ACCAccepts (f i) x := by
+  have eq_filter : (Finset.univ.filter fun i => evalACC (f i) (hf i) x (f i).output = true) =
+    Finset.univ.filter fun i => ACCAccepts (f i) x := by
     ext i
     simp only [Finset.mem_filter, Finset.mem_univ, true_and]
     exact (accAccepts_iff (hf i) x).symm

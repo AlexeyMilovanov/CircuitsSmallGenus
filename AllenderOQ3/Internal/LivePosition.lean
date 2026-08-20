@@ -5,7 +5,8 @@ namespace AllenderOQ3.Internal
 
 variable {w : Nat}
 
-/-- C4': If a piece contains a live coordinate (val < L), its live positions form a cyclic interval modulo L. -/
+/-- C4': If a piece contains a live coordinate (val < L), its live positions form a cyclic interval
+  modulo L. -/
 theorem piece_to_live_position_interval {L : Nat} (hLw : L ≤ w)
     {x : Config w} {start : Fin w} {len : Nat} (hcyc : IsCyclicInterval x start len)
     (h_live : ∃ j, j.val < L ∧ (pieceConfig start len) j = true) :

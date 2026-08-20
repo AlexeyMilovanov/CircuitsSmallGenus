@@ -25,7 +25,7 @@ theorem exists_true_of_isIntervalConfig (hw : 0 < w) {y : Config w}
     _ = true := pieceConfig_true_iff.mpr ⟨0, hlen, by simp⟩
 
 /-- A configuration different from `topConfig` contains a false coordinate. -/
-theorem exists_false_of_ne_topConfig (hw : 0 < w) {y : Config w}
+theorem exists_false_of_ne_topConfig {y : Config w}
     (hy : y ≠ topConfig w) :
     ∃ p : Fin w, y p = false := by
   classical

@@ -1,4 +1,4 @@
-import AllenderOQ3.Model
+import AllenderOQ3.Base
 
 /-!
 # All subgroups abelian, in first-order form
@@ -74,7 +74,7 @@ theorem isUnit_of_mul_eq_one_finite {M : Type} [Monoid M] [Finite M] {c y : M}
   have hsurj : Function.Surjective (fun m : M => c * m) := by
     intro m
     refine ⟨y * m, ?_⟩
-    show c * (y * m) = m
+    change c * (y * m) = m
     rw [← mul_assoc, h, one_mul]
   have hinj : Function.Injective (fun m : M => c * m) :=
     Finite.injective_iff_surjective.mpr hsurj

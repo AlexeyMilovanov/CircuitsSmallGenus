@@ -67,9 +67,9 @@ noncomputable def switchCount (r : OrientableRotation c) (v : Fin c.gateCount) :
   exact (Finset.univ.filter fun d : CircuitDart c =>
     d.source = v ∧ dartIsUp d = true ∧ dartIsUp (r.rotation d) = false).card
 
-/-- The rotation restricted to the darts leaving a fixed vertex. -/
-
-theorem switchCount_eq_zero_of_source (hP : ProperLayered c) (r : OrientableRotation c) {s : Fin c.gateCount}
+/-- A graph source has no switch corners: every dart leaving it is an up-dart. -/
+theorem switchCount_eq_zero_of_source (r : OrientableRotation c)
+  {s : Fin c.gateCount}
     (hs : IsGraphSource c s) : switchCount r s = 0 := by
   unfold switchCount
   rw [Finset.card_eq_zero]
@@ -83,7 +83,8 @@ theorem switchCount_eq_zero_of_source (hP : ProperLayered c) (r : OrientableRota
     have H : ∀ d' : CircuitDart c, d'.source = s → dartIsUp d' = true := by
       intro d' hd'
       unfold dartIsUp
-      have hadj : c.edge d'.source d'.target = true ∨ c.edge d'.target d'.source = true := d'.property.1
+      have hadj : c.edge d'.source d'.target = true ∨ c.edge d'.target d'.source = true :=
+        d'.property.1
       rcases hadj with he | he
       · exact he
       · have : c.edge d'.target s = false := hs d'.target
@@ -95,7 +96,8 @@ theorem switchCount_eq_zero_of_source (hP : ProperLayered c) (r : OrientableRota
   · intro h
     simp at h
 
-theorem switchCount_eq_zero_of_sink (hP : ProperLayered c) (r : OrientableRotation c) {t : Fin c.gateCount}
+theorem switchCount_eq_zero_of_sink (hP : ProperLayered c) (r : OrientableRotation c)
+  {t : Fin c.gateCount}
     (ht : IsGraphSink c t) : switchCount r t = 0 := by
   unfold switchCount
   rw [Finset.card_eq_zero]
@@ -106,7 +108,8 @@ theorem switchCount_eq_zero_of_sink (hP : ProperLayered c) (r : OrientableRotati
     have H : ∀ d' : CircuitDart c, d'.source = t → dartIsUp d' = false := by
       intro d' hd'
       unfold dartIsUp
-      have hadj : c.edge d'.source d'.target = true ∨ c.edge d'.target d'.source = true := d'.property.1
+      have hadj : c.edge d'.source d'.target = true ∨ c.edge d'.target d'.source = true :=
+        d'.property.1
       rcases hadj with he | he
       · have : c.edge t d'.target = false := ht d'.target
         rw [← hd'] at this

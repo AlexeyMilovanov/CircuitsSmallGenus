@@ -29,7 +29,8 @@ theorem eq_k_of_pieces {z : Config w} {s₁ s₂ j : Fin w} {l₁ l₂ k₁ k₂
     have h2 : finPred^[k₁ + 1] j = finPred s₁ := by
       have : finPred^[k₁] j = s₁ := by
         rw [← eq1, finPred_iterate_finShift_cancel]
-      have step : finPred^[k₁ + 1] j = finPred (finPred^[k₁] j) := Function.iterate_succ_apply' finPred k₁ j
+      have step : finPred^[k₁ + 1] j = finPred (finPred^[k₁] j) := Function.iterate_succ_apply'
+        finPred k₁ j
       rw [step, this]
     rw [h2] at h1
     have hf : z (finPred s₁) = false := hc₁.2.2.2.2 hl1
@@ -45,7 +46,8 @@ theorem eq_k_of_pieces {z : Config w} {s₁ s₂ j : Fin w} {l₁ l₂ k₁ k₂
     have h2 : finPred^[k₂ + 1] j = finPred s₂ := by
       have : finPred^[k₂] j = s₂ := by
         rw [← eq2, finPred_iterate_finShift_cancel]
-      have step : finPred^[k₂ + 1] j = finPred (finPred^[k₂] j) := Function.iterate_succ_apply' finPred k₂ j
+      have step : finPred^[k₂ + 1] j = finPred (finPred^[k₂] j) := Function.iterate_succ_apply'
+        finPred k₂ j
       rw [step, this]
     rw [h2] at h1
     have hf : z (finPred s₂) = false := hc₂.2.2.2.2 hl2
@@ -56,7 +58,8 @@ theorem eq_k_of_pieces {z : Config w} {s₁ s₂ j : Fin w} {l₁ l₂ k₁ k₂
     rw [hf] at ht
     exact False.elim (Bool.false_ne_true ht)
 
-/-- C2-uniq: Two interval pieces of the same configuration that share a true coordinate are equal. -/
+/-- C2-uniq: Two interval pieces of the same configuration that share a true coordinate are
+equal. -/
 theorem eq_of_mem_intervalsOf_of_true {z y₁ y₂ : Config w} {j : Fin w}
     (hy₁ : y₁ ∈ intervalsOf z) (hy₂ : y₂ ∈ intervalsOf z)
     (hj₁ : y₁ j = true) (hj₂ : y₂ j = true) : y₁ = y₂ := by
@@ -168,13 +171,16 @@ theorem intervalCount_eq_card_intervalsOf (z : Config w) :
         · intro hy
           rw [hy]
           refine ⟨⟨0, hw_pos⟩, w, ?_, ?_⟩
-          · refine ⟨hw_pos, le_refl w, fun k _ => hall _, fun h => absurd h (lt_irrefl _), fun h => absurd h (lt_irrefl _)⟩
+          · refine
+              ⟨hw_pos, le_refl w, fun k _ => hall _, fun h => absurd h (lt_irrefl _), fun h =>
+              absurd h (lt_irrefl _)⟩
           · ext i
             rw [pieceConfig_full_eq_true]
             exact hall i
       rw [this, Finset.card_singleton]
     · rw [if_neg hall]
-      have heq : Finset.univ.filter (fun i => z (finPred i) = false ∧ z i = true) = risingEdges z := rfl
+      have heq : Finset.univ.filter (fun i => z (finPred i) = false ∧ z i = true) = risingEdges z
+        := rfl
       rw [heq]
       symm
       apply Finset.card_bij (fun y _ => startOf hw_pos y)
@@ -193,7 +199,8 @@ theorem intervalCount_eq_card_intervalsOf (z : Config w) :
             rw [hkeq] at this
             exact this
           exact hall hall_true
-        have h_start_eq : startOf hw_pos (pieceConfig s₁ l₁) = s₁ := (startOf_lenOf_of_piece hc₁.1 hl1 rfl hw_pos).1
+        have h_start_eq : startOf hw_pos (pieceConfig s₁ l₁) = s₁ :=
+          (startOf_lenOf_of_piece hc₁.1 hl1 rfl hw_pos).1
         rw [h_start_eq, mem_risingEdges]
         have hf : z (finPred s₁) = false := hc₁.2.2.2.2 hl1
         have ht : z s₁ = true := by
@@ -228,8 +235,10 @@ theorem intervalCount_eq_card_intervalsOf (z : Config w) :
             rw [hkeq] at this
             exact this
           exact hall hall_true
-        have h_start1 : startOf hw_pos (pieceConfig s₁ l₁) = s₁ := (startOf_lenOf_of_piece hc₁.1 hl1 rfl hw_pos).1
-        have h_start2 : startOf hw_pos (pieceConfig s₂ l₂) = s₂ := (startOf_lenOf_of_piece hc₂.1 hl2 rfl hw_pos).1
+        have h_start1 : startOf hw_pos (pieceConfig s₁ l₁) = s₁ :=
+          (startOf_lenOf_of_piece hc₁.1 hl1 rfl hw_pos).1
+        have h_start2 : startOf hw_pos (pieceConfig s₂ l₂) = s₂ :=
+          (startOf_lenOf_of_piece hc₂.1 hl2 rfl hw_pos).1
         rw [h_start1, h_start2] at hstart
         subst hstart
         have hl_eq : l₁ = l₂ := by
@@ -263,7 +272,8 @@ theorem intervalCount_eq_card_intervalsOf (z : Config w) :
             rw [hkeq] at this
             exact this
           exact hall hall_true
-        have h_start1 : startOf hw_pos (pieceConfig s₁ l₁) = s₁ := (startOf_lenOf_of_piece hc₁.1 hl1 rfl hw_pos).1
+        have h_start1 : startOf hw_pos (pieceConfig s₁ l₁) = s₁ :=
+          (startOf_lenOf_of_piece hc₁.1 hl1 rfl hw_pos).1
         rw [h_start1]
         obtain ⟨k, hk, hkeq⟩ := pieceConfig_true_iff.mp hyi
         have h_k_zero : k = 0 := by

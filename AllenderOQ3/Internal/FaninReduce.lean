@@ -1,5 +1,5 @@
 import AllenderOQ3.Incidence
-import AllenderOQ3.Model
+import AllenderOQ3.Base
 import AllenderOQ3.Internal.FaninReducePortSplit
 import AllenderOQ3.Internal.N4Structure
 import AllenderOQ3.Internal.N4Semantics

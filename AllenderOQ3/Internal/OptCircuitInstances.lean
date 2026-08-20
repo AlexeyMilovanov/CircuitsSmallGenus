@@ -160,7 +160,7 @@ theorem tgtVertex_tgtPos (v : LayerVertex (optCircuit w hw ρ β) 1) :
     tgtVertex hw ρ β (tgtPos hw ρ β v) = v := by
   apply Subtype.ext
   apply Fin.ext
-  show w + (v.val.val - w) = v.val.val
+  change w + (v.val.val - w) = v.val.val
   have h1 : v.val.val / w = 1 := v.2
   have h3 : w ≤ v.val.val := by
     by_contra hcon
@@ -172,7 +172,7 @@ theorem tgtVertex_tgtPos (v : LayerVertex (optCircuit w hw ρ β) 1) :
 theorem tgtPos_tgtVertex (p : Fin w) :
     tgtPos hw ρ β (tgtVertex hw ρ β p) = p := by
   apply Fin.ext
-  show (w + p.val) - w = p.val
+  change (w + p.val) - w = p.val
   omega
 
 /-! ## The incoming blocks -/
@@ -216,7 +216,7 @@ theorem incAt_exact (v : LayerVertex (optCircuit w hw ρ β) 1)
   constructor
   · intro hmem
     obtain ⟨q, h, rfl⟩ := (mem_incAt hw ρ β).mp hmem
-    show (tgtVertex hw ρ β (tgtPos hw ρ β v)).val = v.val
+    change (tgtVertex hw ρ β (tgtPos hw ρ β v)).val = v.val
     rw [tgtVertex_tgtPos]
   · intro he
     obtain ⟨p', q', h', rfl⟩ := arc_cases hw ρ β e
@@ -264,7 +264,7 @@ theorem freeze_out_exact (u : LayerVertex (optCircuit w hw (freezeRho k) (freeze
     have hq : q = srcPos hw (freezeRho k) (freezeBeta b) u :=
       (freezeRho_some h).1
     subst hq
-    show (srcVertex hw (freezeRho k) (freezeBeta b)
+    change (srcVertex hw (freezeRho k) (freezeBeta b)
       (srcPos hw (freezeRho k) (freezeBeta b) u)).val = u.val
     rw [srcVertex_srcPos]
   · intro he
@@ -287,7 +287,7 @@ theorem freeze_word_eq :
       = (tgtListing hw (freezeRho k) (freezeBeta b)).entries.flatMap
         (fun v => incAt hw (freezeRho k) (freezeBeta b)
           (tgtPos hw (freezeRho k) (freezeBeta b) v)) := by
-  show ((List.finRange w).map (srcVertex hw (freezeRho k) (freezeBeta b))).flatMap _
+  change ((List.finRange w).map (srcVertex hw (freezeRho k) (freezeBeta b))).flatMap _
     = ((List.finRange w).map (tgtVertex hw (freezeRho k) (freezeBeta b))).flatMap _
   rw [flatMap_map', flatMap_map']
   refine flatMap_congr' _ (fun p _ => ?_)
@@ -361,11 +361,11 @@ theorem dupNextRho_some {p q : Fin w} (h : dupNextRho i p = some q) :
 
 theorem dupNextRho_self (p : Fin w) (hp : p.val ≠ i.val + 1) :
     dupNextRho i p = some p := by
-  show (if p.val = i.val + 1 then some i else some p) = some p
+  change (if p.val = i.val + 1 then some i else some p) = some p
   rw [if_neg hp]
 
 theorem dupNextRho_succ : dupNextRho i ⟨i.val + 1, hi⟩ = some i := by
-  show (if i.val + 1 = i.val + 1 then some i else _) = some i
+  change (if i.val + 1 = i.val + 1 then some i else _) = some i
   rw [if_pos rfl]
 
 /-- The outgoing blocks of the forward duplication layer. -/
@@ -419,7 +419,6 @@ theorem dupNextOut_exact
       · rw [List.mem_singleton] at hmem
         rw [hmem]
         exact Subtype.ext_iff.mp (srcVertex_srcPos hw (dupNextRho i) (beta0 w) u)
-
   · intro he
     obtain ⟨p', q', h', rfl⟩ := arc_cases hw (dupNextRho i) (beta0 w) e
     have hq' : q' = srcPos hw (dupNextRho i) (beta0 w) u := by
@@ -452,7 +451,7 @@ theorem dupNext_word_eq :
       = (tgtListing hw (dupNextRho i) (beta0 w)).entries.flatMap
         (fun v => incAt hw (dupNextRho i) (beta0 w)
           (tgtPos hw (dupNextRho i) (beta0 w) v)) := by
-  show ((List.finRange w).map (srcVertex hw (dupNextRho i) (beta0 w))).flatMap _
+  change ((List.finRange w).map (srcVertex hw (dupNextRho i) (beta0 w))).flatMap _
     = ((List.finRange w).map (tgtVertex hw (dupNextRho i) (beta0 w))).flatMap _
   rw [flatMap_map', flatMap_map']
   rw [show (List.finRange w).flatMap
@@ -477,7 +476,7 @@ theorem dupNext_word_eq :
     rw [if_neg (by omega), dif_neg (by omega),
       incAt_of_some hw (dupNextRho_self i q (by omega))]
   · unfold dupNextOut
-    rw [if_pos rfl, if_neg (by show ¬ i.val + 1 = i.val; omega), dif_pos rfl,
+    rw [if_pos rfl, if_neg (by change ¬ i.val + 1 = i.val; omega), dif_pos rfl,
       incAt_of_some hw (dupNextRho_self i i (by omega)),
       incAt_of_some hw (dupNextRho_succ i hi)]
     rfl
@@ -520,11 +519,11 @@ theorem dupPrevRho_some {p q : Fin w} (h : dupPrevRho i hi p = some q) :
 
 theorem dupPrevRho_self (p : Fin w) (hp : p.val ≠ i.val) :
     dupPrevRho i hi p = some p := by
-  show (if p.val = i.val then some (⟨i.val + 1, hi⟩ : Fin w) else some p) = some p
+  change (if p.val = i.val then some (⟨i.val + 1, hi⟩ : Fin w) else some p) = some p
   rw [if_neg hp]
 
 theorem dupPrevRho_base : dupPrevRho i hi i = some ⟨i.val + 1, hi⟩ := by
-  show (if i.val = i.val then some (⟨i.val + 1, hi⟩ : Fin w) else _) = _
+  change (if i.val = i.val then some (⟨i.val + 1, hi⟩ : Fin w) else _) = _
   rw [if_pos rfl]
 
 /-- The outgoing blocks of the backward duplication layer. -/
@@ -533,7 +532,7 @@ noncomputable def dupPrevOut (q : Fin w) :
   if q.val = i.val + 1 then
     [optArc hw (dupPrevRho i hi) (beta0 w) i ⟨i.val + 1, hi⟩ (dupPrevRho_base i hi),
      optArc hw (dupPrevRho i hi) (beta0 w) ⟨i.val + 1, hi⟩ ⟨i.val + 1, hi⟩
-       (dupPrevRho_self i hi ⟨i.val + 1, hi⟩ (by show i.val + 1 ≠ i.val; omega))]
+       (dupPrevRho_self i hi ⟨i.val + 1, hi⟩ (by change i.val + 1 ≠ i.val; omega))]
   else if hq2 : q.val = i.val then []
   else [optArc hw (dupPrevRho i hi) (beta0 w) q q (dupPrevRho_self i hi q hq2)]
 
@@ -546,7 +545,7 @@ theorem dupPrevOut_nodup (q : Fin w) : (dupPrevOut hw i hi q).Nodup := by
     have h1 : (optArc hw (dupPrevRho i hi) (beta0 w) i ⟨i.val + 1, hi⟩
           (dupPrevRho_base i hi)).1.2.val
         = (optArc hw (dupPrevRho i hi) (beta0 w) ⟨i.val + 1, hi⟩ ⟨i.val + 1, hi⟩
-          (dupPrevRho_self i hi ⟨i.val + 1, hi⟩ (by show i.val + 1 ≠ i.val; omega))).1.2.val := by
+          (dupPrevRho_self i hi ⟨i.val + 1, hi⟩ (by change i.val + 1 ≠ i.val; omega))).1.2.val := by
       rw [hmem]
     have h2 : w + i.val = w + (i.val + 1) := h1
     omega
@@ -598,7 +597,7 @@ theorem dupPrevOut_exact
       · rw [if_pos (hv.trans hpi)]
         refine List.mem_cons.mpr (Or.inr (List.mem_singleton.mpr ?_))
         exact optArc_eq_of_val hw h'
-          (dupPrevRho_self i hi ⟨i.val + 1, hi⟩ (by show i.val + 1 ≠ i.val; omega))
+          (dupPrevRho_self i hi ⟨i.val + 1, hi⟩ (by change i.val + 1 ≠ i.val; omega))
           (Fin.ext hpi) (hq1.trans (Fin.ext hpi))
       · rw [if_neg (fun hc => hpi (hv.symm.trans hc)),
           dif_neg (fun hc => hp1 (hv.symm.trans hc))]
@@ -613,7 +612,7 @@ theorem dupPrev_word_eq :
       = (tgtListing hw (dupPrevRho i hi) (beta0 w)).entries.flatMap
         (fun v => incAt hw (dupPrevRho i hi) (beta0 w)
           (tgtPos hw (dupPrevRho i hi) (beta0 w) v)) := by
-  show ((List.finRange w).map (srcVertex hw (dupPrevRho i hi) (beta0 w))).flatMap _
+  change ((List.finRange w).map (srcVertex hw (dupPrevRho i hi) (beta0 w))).flatMap _
     = ((List.finRange w).map (tgtVertex hw (dupPrevRho i hi) (beta0 w))).flatMap _
   rw [flatMap_map', flatMap_map']
   rw [show (List.finRange w).flatMap
@@ -640,7 +639,7 @@ theorem dupPrev_word_eq :
   · unfold dupPrevOut
     rw [if_neg (by show ¬ i.val = i.val + 1; omega), dif_pos rfl, if_pos rfl,
       incAt_of_some hw (dupPrevRho_base i hi),
-      incAt_of_some hw (dupPrevRho_self i hi ⟨i.val + 1, hi⟩ (by show i.val + 1 ≠ i.val; omega))]
+      incAt_of_some hw (dupPrevRho_self i hi ⟨i.val + 1, hi⟩ (by change i.val + 1 ≠ i.val; omega))]
     rfl
 
 include hw hi in

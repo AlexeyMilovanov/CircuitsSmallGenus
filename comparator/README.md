@@ -4,7 +4,8 @@ This repository uses
 [`leanprover/comparator`](https://github.com/leanprover/comparator) to separate
 the statement a reviewer must read from the AI-assisted proof.
 
-- [`../Challenge.lean`](../Challenge.lean) imports only Mathlib and contains
+- [`../Challenge.lean`](../Challenge.lean) imports only Mathlib modules (the
+  same explicit header as `AllenderOQ3/Model.lean`) and contains
   the complete trusted statement, including every custom definition used by
   its type.
 - [`../Solution.lean`](../Solution.lean) connects that statement directly to

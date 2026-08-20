@@ -1,5 +1,5 @@
 import AllenderOQ3.Incidence
-import AllenderOQ3.Model
+import AllenderOQ3.Base
 import AllenderOQ3.Internal.IncidenceToolkit
 
 set_option autoImplicit false

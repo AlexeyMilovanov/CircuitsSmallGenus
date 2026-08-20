@@ -61,13 +61,16 @@ outside the set.
 -/
 
 /-- The circuit obtained by deleting all edges with at least one endpoint outside `S`. -/
-noncomputable def induceSubgraph {n : Nat} (c : ADRCircuit n) (S : Finset (Fin c.gateCount)) : ADRCircuit n :=
+noncomputable def induceSubgraph {n : Nat} (c : ADRCircuit n) (S : Finset (Fin c.gateCount)) :
+  ADRCircuit n :=
   { c with edge := fun a b => if a ∈ S ∧ b ∈ S then c.edge a b else false }
 
-@[simp] theorem induceSubgraph_gateCount {n : Nat} (c : ADRCircuit n) (S : Finset (Fin c.gateCount)) :
+@[simp] theorem induceSubgraph_gateCount {n : Nat} (c : ADRCircuit n)
+  (S : Finset (Fin c.gateCount)) :
     (induceSubgraph c S).gateCount = c.gateCount := rfl
 
-@[simp] theorem induceSubgraph_edge {n : Nat} (c : ADRCircuit n) (S : Finset (Fin c.gateCount)) (a b : Fin c.gateCount) :
+@[simp] theorem induceSubgraph_edge {n : Nat} (c : ADRCircuit n) (S : Finset (Fin c.gateCount))
+  (a b : Fin c.gateCount) :
     (induceSubgraph c S).edge a b = if a ∈ S ∧ b ∈ S then c.edge a b else false := rfl
 
 @[simp] theorem induceSubgraph_layer {n : Nat} (c : ADRCircuit n) (S : Finset (Fin c.gateCount))
@@ -127,13 +130,13 @@ theorem induceSubgraph_eq_blockIn {n : Nat} (c : ADRCircuit n) (S : Finset (Fin 
 
 /-- If `r` vertex-disjoint connected subgraphs are non-planar, the genus is at least `r`.
 
-The connectivity hypothesis `h_conn` is kept because it is part of the intended
+The connectivity hypothesis `_h_conn` is kept because it is part of the intended
 reading of the statement; the proof does not need it, since the genus is already
 superadditive over vertex-disjoint subgraphs whether or not they are connected. -/
 theorem genus_packing {n : Nat} (c : ADRCircuit n) (r : Nat)
     (S : Fin r → Finset (Fin c.gateCount))
     (h_disj : ∀ i j, i ≠ j → Disjoint (S i) (S j))
-    (h_conn : ∀ i, ∀ u ∈ S i, ∀ v ∈ S i, VertexReachable (induceSubgraph c (S i)) u v)
+    (_h_conn : ∀ i, ∀ u ∈ S i, ∀ v ∈ S i, VertexReachable (induceSubgraph c (S i)) u v)
     (h_nonplanar : ∀ i, ¬ RotationPlanar (induceSubgraph c (S i))) :
     r ≤ orientableCircuitGenus c := by
   classical

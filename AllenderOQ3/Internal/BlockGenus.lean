@@ -126,7 +126,8 @@ theorem genus_maskCircuit_le (c : ADRCircuit n)
         intro a b
         by_contra hab
         have hmem : ((a, b) : Fin c.gateCount × Fin c.gateCount) ∈
-            Finset.univ.filter (fun p : Fin c.gateCount × Fin c.gateCount => k p.1 p.2 = false) := by
+            Finset.univ.filter (fun p : Fin c.gateCount × Fin c.gateCount => k p.1 p.2 = false) :=
+              by
           have hab' : k a b = false := by simpa using hab
           simp [hab']
         have := Finset.card_pos.mpr ⟨_, hmem⟩
@@ -195,7 +196,7 @@ def blockOut (c : ADRCircuit n) (A : Finset (Fin c.gateCount)) : ADRCircuit n :=
     (a b : Fin c.gateCount) :
     (blockIn c A).edge a b = if a ∈ A ∧ b ∈ A then c.edge a b else false := by
   by_cases h : a ∈ A ∧ b ∈ A
-  · simp [blockIn, maskCircuit, h.1, h.2, h]
+  · simp [blockIn, maskCircuit, h.1, h.2]
   · rw [if_neg h]
     have : ¬ (a ∈ A ∧ b ∈ A) := h
     simp only [blockIn, maskCircuit_edge, Bool.and_eq_true, decide_eq_true_eq]
@@ -205,7 +206,7 @@ def blockOut (c : ADRCircuit n) (A : Finset (Fin c.gateCount)) : ADRCircuit n :=
     (a b : Fin c.gateCount) :
     (blockOut c A).edge a b = if a ∉ A ∧ b ∉ A then c.edge a b else false := by
   by_cases h : a ∉ A ∧ b ∉ A
-  · simp [blockOut, maskCircuit, h.1, h.2, h]
+  · simp [blockOut, maskCircuit, h.1, h.2]
   · rw [if_neg h]
     simp only [blockOut, maskCircuit_edge, Bool.and_eq_true, Bool.not_eq_true',
       decide_eq_false_iff_not]
@@ -412,7 +413,8 @@ theorem reach_blockIn_of_reach {c : ADRCircuit n} {A : Finset (Fin c.gateCount)}
       have hstep : UnderlyingAdj (blockIn c A) w z :=
         (underlyingAdj_blockIn hsep w z).mpr ⟨hadj, ih.2⟩
       have hz : z ∈ A :=
-        ((underlyingAdj_blockIn hsep z w).mp ((underlyingAdj_comm (c := blockIn c A) w z).mp hstep)).2
+        ((underlyingAdj_blockIn hsep z w).mp
+          ((underlyingAdj_comm (c := blockIn c A) w z).mp hstep)).2
       exact ⟨ih.1.tail hstep, hz⟩
 
 /-- Starting outside `A`, reachability in `c` stays outside `A` and is realised in the
@@ -426,7 +428,8 @@ theorem reach_blockOut_of_reach {c : ADRCircuit n} {A : Finset (Fin c.gateCount)
       have hstep : UnderlyingAdj (blockOut c A) w z :=
         (underlyingAdj_blockOut hsep w z).mpr ⟨hadj, ih.2⟩
       have hz : z ∉ A :=
-        ((underlyingAdj_blockOut hsep z w).mp ((underlyingAdj_comm (c := blockOut c A) w z).mp hstep)).2
+        ((underlyingAdj_blockOut hsep z w).mp
+          ((underlyingAdj_comm (c := blockOut c A) w z).mp hstep)).2
       exact ⟨ih.1.tail hstep, hz⟩
 
 /-- Each block turns the vertices of the other block into singleton components. -/

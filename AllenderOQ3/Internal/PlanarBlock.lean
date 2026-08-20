@@ -86,21 +86,25 @@ theorem genus_hardwireState {c : ADRCircuit n} (idx : LayerIndexing c w)
   set phi := dartEquiv_hardwireState idx P k l s outGate
   have hs : ∀ d e : CircuitDart c₁, (phi d).source = (phi e).source ↔ d.source = e.source := by
     intro d e; rfl
-  have hs' : ∀ d e : CircuitDart c₂, (phi.symm d).source = (phi.symm e).source ↔ d.source = e.source := by
+  have hs' : ∀ d e : CircuitDart c₂, (phi.symm d).source = (phi.symm e).source ↔ d.source =
+    e.source := by
     intro d e; rfl
   have hr : ∀ d : CircuitDart c₁, phi (dartReverse c₁ d) = dartReverse c₂ (phi d) := by
     intro d; rfl
   have hr' : ∀ d : CircuitDart c₂, phi.symm (dartReverse c₂ d) = dartReverse c₁ (phi.symm d) := by
     intro d; rfl
   have harith : ∀ F : Nat,
-      (2 * componentCount c₁ + underlyingEdgeCount c₁ - c₁.gateCount - (F + isolatedVertexCount c₁)) / 2
-        = (2 * componentCount c₂ + underlyingEdgeCount c₂ - c₂.gateCount - (F + isolatedVertexCount c₂)) / 2 := by
+      (2 * componentCount c₁ + underlyingEdgeCount c₁ - c₁.gateCount -
+        (F + isolatedVertexCount c₁)) / 2
+        = (2 * componentCount c₂ + underlyingEdgeCount c₂ - c₂.gateCount -
+          (F + isolatedVertexCount c₂)) / 2 := by
     have hC : componentCount c₁ = componentCount c₂ := rfl
     have hI : isolatedVertexCount c₁ = isolatedVertexCount c₂ := rfl
     have hE : underlyingEdgeCount c₁ = underlyingEdgeCount c₂ := rfl
     have hV : c₁.gateCount = c₂.gateCount := rfl
     intro F; rw [hC, hI, hE, hV]
-  have hfwd : ∀ r : OrientableRotation c₂, rotationGenus (transportRotation phi hs r) = rotationGenus r := by
+  have hfwd : ∀ r : OrientableRotation c₂, rotationGenus (transportRotation phi hs r) =
+    rotationGenus r := by
     intro r
     have hface : permCycleCount (facePermutation (transportRotation phi hs r))
         = permCycleCount (facePermutation r) :=
@@ -108,7 +112,8 @@ theorem genus_hardwireState {c : ADRCircuit n} (idx : LayerIndexing c w)
     unfold rotationGenus
     simp only [hface]
     exact harith _
-  have hbwd : ∀ r : OrientableRotation c₁, rotationGenus (transportRotation phi.symm hs' r) = rotationGenus r := by
+  have hbwd : ∀ r : OrientableRotation c₁, rotationGenus (transportRotation phi.symm hs' r) =
+    rotationGenus r := by
     intro r
     have hface : permCycleCount (facePermutation (transportRotation phi.symm hs' r))
         = permCycleCount (facePermutation r) :=

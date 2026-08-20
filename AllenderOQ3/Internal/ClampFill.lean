@@ -16,7 +16,6 @@ single layers of `OptCircuitInstances`, hence certified.
 -/
 
 set_option autoImplicit false
-set_option maxHeartbeats 1000000
 
 namespace AllenderOQ3
 namespace Internal
@@ -30,45 +29,45 @@ variable {w : Nat}
 theorem runTrans_freezeTrans (k : Fin w) (b : Bool) (z : Config w) (p : Fin w) :
     runTrans (optTrans (freezeRho k) (freezeBeta b)) z p
       = if p = k then b else z p := by
-  show (match freezeRho k p with
+  change (match freezeRho k p with
     | some q => z q
     | none => freezeBeta b p) = _
   by_cases hp : p = k
   · rw [show freezeRho k p = none from by
-      show (if p = k then _ else _) = _
+      change (if p = k then _ else _) = _
       rw [if_pos hp], if_pos hp]
     rfl
   · rw [show freezeRho k p = some p from by
-      show (if p = k then _ else _) = _
+      change (if p = k then _ else _) = _
       rw [if_neg hp], if_neg hp]
 
 theorem runTrans_dupNextTrans (i : Fin w) (z : Config w) (p : Fin w) :
     runTrans (optTrans (dupNextRho i) (beta0 w)) z p
       = if p.val = i.val + 1 then z i else z p := by
-  show (match dupNextRho i p with
+  change (match dupNextRho i p with
     | some q => z q
     | none => beta0 w p) = _
   by_cases hp : p.val = i.val + 1
   · rw [show dupNextRho i p = some i from by
-      show (if p.val = i.val + 1 then _ else _) = _
+      change (if p.val = i.val + 1 then _ else _) = _
       rw [if_pos hp], if_pos hp]
   · rw [show dupNextRho i p = some p from by
-      show (if p.val = i.val + 1 then _ else _) = _
+      change (if p.val = i.val + 1 then _ else _) = _
       rw [if_neg hp], if_neg hp]
 
 theorem runTrans_dupPrevTrans (i : Fin w) (hi : i.val + 1 < w)
     (z : Config w) (p : Fin w) :
     runTrans (optTrans (dupPrevRho i hi) (beta0 w)) z p
       = if p.val = i.val then z ⟨i.val + 1, hi⟩ else z p := by
-  show (match dupPrevRho i hi p with
+  change (match dupPrevRho i hi p with
     | some q => z q
     | none => beta0 w p) = _
   by_cases hp : p.val = i.val
   · rw [show dupPrevRho i hi p = some ⟨i.val + 1, hi⟩ from by
-      show (if p.val = i.val then _ else _) = _
+      change (if p.val = i.val then _ else _) = _
       rw [if_pos hp], if_pos hp]
   · rw [show dupPrevRho i hi p = some p from by
-      show (if p.val = i.val then _ else _) = _
+      change (if p.val = i.val then _ else _) = _
       rw [if_neg hp], if_neg hp]
 
 /-! ## The nearest `J`-coordinate at or below a position -/
@@ -208,10 +207,10 @@ theorem runTrans_ascProd (J : Finset (Fin w)) (n : Nat) (z : Config w)
       = if p.val < n then z (gsrc J p) else z p := by
   induction n generalizing p with
   | zero =>
-    show runTrans (1 : TransMonoid w) z p = _
+    change runTrans (1 : TransMonoid w) z p = _
     rw [runTrans_one, if_neg (by omega)]
   | succ n ih =>
-    show runTrans (ascProd J n * ascLayer J n) z p = _
+    change runTrans (ascProd J n * ascLayer J n) z p = _
     rw [runTrans_mul]
     unfold ascLayer
     split
@@ -279,7 +278,7 @@ theorem runTrans_ascProd (J : Finset (Fin w)) (n : Nat) (z : Config w)
             · rintro ⟨hjJ, hjle⟩
               have h1 : j.val ≤ p.val := Fin.le_def.mp hjle
               refine ⟨hjJ, Fin.le_def.mpr ?_⟩
-              show j.val ≤ n - 1
+              change j.val ≤ n - 1
               rcases Nat.lt_or_ge j.val n with hlt | hge
               · omega
               · exfalso
@@ -329,12 +328,12 @@ theorem runTrans_descProd (t : Nat) (ht : t < w) (n : Nat) :
   induction n with
   | zero =>
     intro _ z p
-    show runTrans (1 : TransMonoid w) z p = _
+    change runTrans (1 : TransMonoid w) z p = _
     rw [runTrans_one, if_neg (by omega)]
   | succ n ih =>
     intro hn z p
     have hnt : n ≤ t := by omega
-    show runTrans (descProd t n * descLayer (t - (n + 1))) z p = _
+    change runTrans (descProd t n * descLayer (t - (n + 1))) z p = _
     rw [runTrans_mul]
     unfold descLayer
     have hcond : t - (n + 1) + 1 < w := by omega
@@ -373,7 +372,7 @@ theorem runTrans_fillTrans (J : Finset (Fin w)) (hJ : J.Nonempty)
     (z : Config w) (p : Fin w) :
     runTrans (fillTrans J hJ) z p
       = if p.val < (J.min' hJ).val then z (J.min' hJ) else z (gsrc J p) := by
-  show runTrans (ascProd J w * descProd (J.min' hJ).val (J.min' hJ).val) z p
+  change runTrans (ascProd J w * descProd (J.min' hJ).val (J.min' hJ).val) z p
     = _
   rw [runTrans_mul,
     runTrans_descProd (J.min' hJ).val (J.min' hJ).isLt _ (le_refl _)]

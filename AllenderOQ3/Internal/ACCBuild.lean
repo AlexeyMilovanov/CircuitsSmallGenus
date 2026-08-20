@@ -400,7 +400,8 @@ theorem wellFormedACC_accShiftLayers {c : ACCCircuit n m} (hc : WellFormedACC c)
     simp only [accShiftLayers_kind] at hg
     simpa only [accShiftLayers_edge] using h3 g hg
 
-theorem accShiftLayers_layer_le {c : ACCCircuit n m} {d : Nat} (hc : ∀ g, c.layer g ≤ d) (shift : Nat) :
+theorem accShiftLayers_layer_le {c : ACCCircuit n m} {d : Nat} (hc : ∀ g, c.layer g ≤ d)
+  (shift : Nat) :
     ∀ g, (accShiftLayers c shift).layer g ≤ d + shift := by
   intro g
   rw [accShiftLayers_layer]
@@ -409,13 +410,15 @@ theorem accShiftLayers_layer_le {c : ACCCircuit n m} {d : Nat} (hc : ∀ g, c.la
 
 theorem evalACC_accShiftLayers {c : ACCCircuit n m} (hc : WellFormedACC c) (shift : Nat)
     (x : Fin n → Bool) (g : Fin c.gateCount) :
-    evalACC (accShiftLayers c shift) (wellFormedACC_accShiftLayers hc shift) x g = evalACC c hc x g := by
+    evalACC (accShiftLayers c shift) (wellFormedACC_accShiftLayers hc shift) x g = evalACC c hc x g
+      := by
   have hval : ACCValuation (accShiftLayers c shift) x (evalACC c hc x) :=
     Classical.choose_spec (accValuation_exists c hc x)
   have heq := (accValuation_iff_eq_evalACC (wellFormedACC_accShiftLayers hc shift)).mp hval
   exact congrFun heq.symm g
 
-theorem accAccepts_accShiftLayers {c : ACCCircuit n m} (hc : WellFormedACC c) (shift : Nat) (x : Fin n → Bool) :
+theorem accAccepts_accShiftLayers {c : ACCCircuit n m} (hc : WellFormedACC c) (shift : Nat)
+  (x : Fin n → Bool) :
     ACCAccepts (accShiftLayers c shift) x ↔ ACCAccepts c x := by
   rw [accAccepts_iff (wellFormedACC_accShiftLayers hc shift) x, accAccepts_iff hc x,
     accShiftLayers_output, evalACC_accShiftLayers hc shift x]
@@ -439,10 +442,12 @@ def accRelabel {n' : Nat} (c : ACCCircuit n m) (f : Fin n → Fin n') : ACCCircu
 @[simp] theorem accRelabel_output {n' : Nat} (c : ACCCircuit n m) (f : Fin n → Fin n') :
     (accRelabel c f).output = c.output := rfl
 
-@[simp] theorem accRelabel_layer {n' : Nat} (c : ACCCircuit n m) (f : Fin n → Fin n') (g : Fin c.gateCount) :
+@[simp] theorem accRelabel_layer {n' : Nat} (c : ACCCircuit n m) (f : Fin n → Fin n')
+  (g : Fin c.gateCount) :
     (accRelabel c f).layer g = c.layer g := rfl
 
-@[simp] theorem accRelabel_edge {n' : Nat} (c : ACCCircuit n m) (f : Fin n → Fin n') (u v : Fin c.gateCount) :
+@[simp] theorem accRelabel_edge {n' : Nat} (c : ACCCircuit n m) (f : Fin n → Fin n')
+  (u v : Fin c.gateCount) :
     (accRelabel c f).edge u v = c.edge u v := rfl
 
 /-- Relabelling turns a `notGate` into a `notGate` and nothing else. -/
@@ -467,7 +472,8 @@ theorem accRelabel_kind_literal {n' : Nat} (c : ACCCircuit n m) (f : Fin n → F
   · rintro ⟨i, b, h⟩
     exact ⟨f i, b, by simp only [accRelabel, h]⟩
 
-theorem wellFormedACC_accRelabel {n' : Nat} {c : ACCCircuit n m} (hc : WellFormedACC c) (f : Fin n → Fin n') :
+theorem wellFormedACC_accRelabel {n' : Nat} {c : ACCCircuit n m} (hc : WellFormedACC c)
+  (f : Fin n → Fin n') :
     WellFormedACC (accRelabel c f) := by
   refine ⟨hc.1, ?_, ?_⟩
   · intro g
@@ -476,7 +482,8 @@ theorem wellFormedACC_accRelabel {n' : Nat} {c : ACCCircuit n m} (hc : WellForme
   · intro g hg
     exact hc.2.2 g ((accRelabel_kind_notGate c f g).mp hg)
 
-theorem accRelabel_layer_le {n' : Nat} {c : ACCCircuit n m} {d : Nat} (hc : ∀ g, c.layer g ≤ d) (f : Fin n → Fin n') :
+theorem accRelabel_layer_le {n' : Nat} {c : ACCCircuit n m} {d : Nat} (hc : ∀ g, c.layer g ≤ d)
+  (f : Fin n → Fin n') :
     ∀ g, (accRelabel c f).layer g ≤ d := by
   intro g
   rw [accRelabel_layer]
@@ -492,7 +499,8 @@ theorem accValuation_accRelabel {n' : Nat} {c : ACCCircuit n m} (f : Fin n → F
     simp only [hk] at hg <;> simp only [accRelabel, hk] <;>
     simpa [Function.comp] using hg
 
-theorem evalACC_accRelabel {n' : Nat} {c : ACCCircuit n m} (hc : WellFormedACC c) (f : Fin n → Fin n')
+theorem evalACC_accRelabel {n' : Nat} {c : ACCCircuit n m} (hc : WellFormedACC c)
+  (f : Fin n → Fin n')
     (x : Fin n' → Bool) (g : Fin c.gateCount) :
     evalACC (accRelabel c f) (wellFormedACC_accRelabel hc f) x g = evalACC c hc (x ∘ f) g := by
   have hval : ACCValuation (accRelabel c f) x (evalACC c hc (x ∘ f)) :=
@@ -500,12 +508,14 @@ theorem evalACC_accRelabel {n' : Nat} {c : ACCCircuit n m} (hc : WellFormedACC c
   have heq := (accValuation_iff_eq_evalACC (wellFormedACC_accRelabel hc f)).mp hval
   exact congrFun heq.symm g
 
-theorem accAccepts_accRelabel {n' : Nat} {c : ACCCircuit n m} (hc : WellFormedACC c) (f : Fin n → Fin n') (x : Fin n' → Bool) :
+theorem accAccepts_accRelabel {n' : Nat} {c : ACCCircuit n m} (hc : WellFormedACC c)
+  (f : Fin n → Fin n') (x : Fin n' → Bool) :
     ACCAccepts (accRelabel c f) x ↔ ACCAccepts c (x ∘ f) := by
   rw [accAccepts_iff (wellFormedACC_accRelabel hc f) x, accAccepts_iff hc (x ∘ f),
     accRelabel_output, evalACC_accRelabel hc f x]
 
-/-- Output-for-literal substitution. Replaces occurrences of `u` as an input in `c` with `b.output`. -/
+/-- Output-for-literal substitution. Replaces occurrences of `u` as an input in `c` with
+  `b.output`. -/
 def accGraft (c b : ACCCircuit n m) (u : Fin c.gateCount) : ACCCircuit n m where
   gateCount := c.gateCount + b.gateCount
   output := Fin.castAdd b.gateCount c.output
@@ -644,7 +654,8 @@ theorem wellFormedACC_accGraft {c b : ACCCircuit n m} (hc : WellFormedACC c) (hb
         obtain ⟨h', hh', huniq⟩ := hc.2.2 g' hg
         by_cases hu : h' = u
         · subst hu
-          refine ⟨Fin.natAdd c.gateCount b.output, accGraft_edge_to_left.mpr (Or.inr ⟨rfl, hh'⟩), ?_⟩
+          refine
+            ⟨Fin.natAdd c.gateCount b.output, accGraft_edge_to_left.mpr (Or.inr ⟨rfl, hh'⟩), ?_⟩
           intro y hy
           rcases accGraft_edge_to_left.mp hy with ⟨y', rfl, hne, hey⟩ | ⟨rfl, _⟩
           · exact absurd (huniq y' hey) hne

@@ -1,4 +1,4 @@
-import Mathlib
+import AllenderOQ3.Base
 import AllenderOQ3.Internal.ACCJoin
 import AllenderOQ3.Internal.ACCCyclicWord
 
@@ -9,17 +9,17 @@ namespace AllenderOQ3.Internal
 variable {n m : Nat}
 
 /-- Evaluate a guessed change sequence. -/
-def evalGuess {Z : Type} {len K : Nat} (times : Fin K → Fin len) (vals : Fin (K + 1) → Z) (i : Fin (len + 1)) : Z :=
+def evalGuess {Z : Type} {len K : Nat} (times : Fin K → Fin len) (vals : Fin (K + 1) → Z)
+  (i : Fin (len + 1)) : Z :=
   vals ⟨(Finset.univ.filter (fun j : Fin K => (times j : Nat) < (i : Nat))).card, by
-    have h1 : (Finset.univ.filter (fun j : Fin K => (times j : Nat) < (i : Nat))).card ≤ (Finset.univ : Finset (Fin K)).card :=
+    have h1 : (Finset.univ.filter (fun j : Fin K => (times j : Nat) < (i : Nat))).card ≤
+      (Finset.univ : Finset (Fin K)).card :=
       Finset.card_filter_le _ _
     rw [Finset.card_univ, Fintype.card_fin] at h1
     exact Nat.lt_succ_of_le h1⟩
 
 
-open Classical
-
-lemma z_eq_of_count_eq {Z : Type} [DecidableEq Z] {len K : Nat}
+lemma z_eq_of_count_eq {Z : Type} {len K : Nat}
     (z : Fin (len + 1) → Z)
     (times : Fin K → Fin len)
     (H_surj : ∀ s : Fin len, z (Fin.castSucc s) ≠ z s.succ → ∃ j : Fin K, times j = s)
@@ -58,14 +58,17 @@ lemma z_eq_of_count_eq {Z : Type} [DecidableEq Z] {len K : Nat}
     omega
   have hz_eq : ∀ d (hd : i_0.val + d ≤ i.val), z' i_0.val = z' (i_0.val + d) := by
     intro d
-    induction' d with d ih
-    · intro hd
+    induction d with
+    | zero =>
+      intro hd
       have : i_0.val + 0 = i_0.val := rfl
       rw [this]
-    · intro hd
+    | succ d ih =>
+      intro hd
       have hd' : i_0.val + d ≤ i.val := by omega
       have h1 : z' i_0.val = z' (i_0.val + d) := ih hd'
-      have h2 : z' (i_0.val + d) = z' (i_0.val + d + 1) := H_no_change (i_0.val + d) (by omega) (by omega)
+      have h2 : z' (i_0.val + d) = z' (i_0.val + d + 1) := H_no_change (i_0.val + d) (by omega)
+        (by omega)
       rw [h1, h2]; congr 1
   have h_final := hz_eq (i.val - i_0.val) (by omega)
   have h_i_eq : i_0.val + (i.val - i_0.val) = i.val := by omega
@@ -130,7 +133,7 @@ theorem exists_guess_of_changes_le {Z : Type} [DecidableEq Z] {len K : Nat} (z :
 
 /-- The bounded-change (aperiodic) layer obligation. -/
 theorem cascade_aperiodic_layer {len size_letter size_driver d K : Nat}
-    {Z L Y : Type} [Fintype Z] [Fintype L] [Fintype Y] [DecidableEq Z] [DecidableEq L] [DecidableEq Y]
+    {Z L Y : Type} [Fintype Z] [Fintype L] [Fintype Y] [DecidableEq Z]
     (letter : Fin len → (Fin n → Bool) → L)
     (driver : Fin len → (Fin n → Bool) → Y)
     (step : L → Y → Z → Z)
@@ -149,12 +152,14 @@ theorem cascade_aperiodic_layer {len size_letter size_driver d K : Nat}
     (z : Fin (len + 1) → (Fin n → Bool) → Z)
     (hz0 : ∀ x, z 0 x = z0)
     (hz_succ : ∀ i x, z i.succ x = step (letter i x) (driver i x) (z (Fin.castSucc i) x))
-    (h_changes : ∀ x, (Finset.univ.filter (fun i : Fin len => z (Fin.castSucc i) x ≠ z i.succ x)).card ≤ K) :
+    (h_changes : ∀ x,
+      (Finset.univ.filter (fun i : Fin len => z (Fin.castSucc i) x ≠ z i.succ x)).card ≤ K) :
     ∃ a : ACCCircuit n m,
       WellFormedACC a ∧
       (∀ q, a.layer q ≤ max (d + 2) 1 + 5) ∧
       a.gateCount ≤ Fintype.card (Fin K → Fin len) * Fintype.card (Fin (K + 1) → Z) *
-        ((len + 2) * ((Fintype.card L * Fintype.card Y) * (size_letter + size_driver + 1) + 1) + 1) + 1 ∧
+        ((len + 2) * ((Fintype.card L * Fintype.card Y) * (size_letter + size_driver + 1) + 1) + 1)
+          + 1 ∧
       (∀ x, ACCAccepts a x ↔ z (Fin.last len) x = target) := by
   have h_rec : ∀ i c1 c2, ∃ c : ACCCircuit n m,
       WellFormedACC c ∧
@@ -181,7 +186,8 @@ theorem cascade_aperiodic_layer {len size_letter size_driver d K : Nat}
       have : ∀ j, (g j 0).gateCount + (g j 1).gateCount + 1 ≤ size_letter + size_driver + 1 := by
         intro j
         exact Nat.add_le_add (Nat.add_le_add (hsizeL i _) (hsizeD i _)) (le_refl 1)
-      have hsum : (∑ j : Fin k', ((g j 0).gateCount + (g j 1).gateCount + 1)) ≤ k' * (size_letter + size_driver + 1) := by
+      have hsum : (∑ j : Fin k', ((g j 0).gateCount + (g j 1).gateCount + 1)) ≤ k' *
+        (size_letter + size_driver + 1) := by
         exact Finset.sum_le_card_nsmul Finset.univ _ _ (fun j _ => this j) |>.trans (by simp)
       calc (∑ j : Fin k', ((g j 0).gateCount + (g j 1).gateCount + 1)) + 1
         ≤ k' * (size_letter + size_driver + 1) + 1 := Nat.add_le_add_right hsum 1
@@ -205,13 +211,15 @@ theorem cascade_aperiodic_layer {len size_letter size_driver d K : Nat}
         have hmem : pairs.get (hk' ▸ j) ∈ pairs := by
           have hget : pairs.get (hk' ▸ j) = pairs.get (hk' ▸ j) := rfl
           exact List.mem_iff_get.mpr ⟨hk' ▸ j, hget⟩
-        have hmem' : pairs.get (hk' ▸ j) ∈ (Finset.univ.filter (fun p : L × Y => step p.1 p.2 c1 = c2)).toList := hpairs ▸ hmem
+        have hmem' : pairs.get (hk' ▸ j) ∈
+          (Finset.univ.filter (fun p : L × Y => step p.1 p.2 c1 = c2)).toList := hpairs ▸ hmem
         rw [Finset.mem_toList, Finset.mem_filter] at hmem'
         rw [hj0, hj1]
         exact hmem'.2
       · intro hval
         have hmem : (letter i x, driver i x) ∈ pairs := by
-          have hmem' : (letter i x, driver i x) ∈ (Finset.univ.filter (fun p : L × Y => step p.1 p.2 c1 = c2)).toList := by
+          have hmem' : (letter i x, driver i x) ∈
+            (Finset.univ.filter (fun p : L × Y => step p.1 p.2 c1 = c2)).toList := by
             rw [Finset.mem_toList, Finset.mem_filter]
             exact ⟨Finset.mem_univ _, hval⟩
           exact hpairs.symm ▸ hmem'
@@ -250,38 +258,47 @@ theorem cascade_aperiodic_layer {len size_letter size_driver d K : Nat}
   have hwf_out : ∀ i j, WellFormedACC (outer i j) := by
     intro i j
     by_cases hj : j.val = 0
-    · have h_eq : outer i j = accConst n m (decide (evalGuess (idxEquiv.symm i).1 (idxEquiv.symm i).2 0 = z0)) := by
+    · have h_eq : outer i j = accConst n m
+        (decide (evalGuess (idxEquiv.symm i).1 (idxEquiv.symm i).2 0 = z0)) := by
         dsimp [outer]; rw [dif_pos hj]
       rw [h_eq]; exact wellFormedACC_accConst n m _
     · by_cases hj2 : j.val = len + 1
-      · have h_eq : outer i j = accConst n m (decide (evalGuess (idxEquiv.symm i).1 (idxEquiv.symm i).2 (Fin.last len) = target)) := by
+      · have h_eq : outer i j = accConst n m
+          (decide (evalGuess (idxEquiv.symm i).1 (idxEquiv.symm i).2 (Fin.last len) = target)) := by
           dsimp [outer]; rw [dif_neg hj, dif_pos hj2]
         rw [h_eq]; exact wellFormedACC_accConst n m _
-      · have h_eq : outer i j = checkStep ⟨j.val - 1, by omega⟩ (evalGuess (idxEquiv.symm i).1 (idxEquiv.symm i).2 ⟨j.val - 1, by omega⟩) (evalGuess (idxEquiv.symm i).1 (idxEquiv.symm i).2 ⟨j.val, by omega⟩) := by
+      · have h_eq : outer i j = checkStep ⟨j.val - 1, by omega⟩
+          (evalGuess (idxEquiv.symm i).1 (idxEquiv.symm i).2 ⟨j.val - 1, by omega⟩)
+          (evalGuess (idxEquiv.symm i).1 (idxEquiv.symm i).2 ⟨j.val, by omega⟩) := by
           dsimp [outer]; rw [dif_neg hj, dif_neg hj2]
         rw [h_eq]; exact hcs_wf _ _ _
   have hlay_out : ∀ i j (q : Fin (outer i j).gateCount), (outer i j).layer q ≤ d + 2 := by
     intro i j
     by_cases hj : j.val = 0
-    · have h_eq : outer i j = accConst n m (decide (evalGuess (idxEquiv.symm i).1 (idxEquiv.symm i).2 0 = z0)) := by
+    · have h_eq : outer i j = accConst n m
+        (decide (evalGuess (idxEquiv.symm i).1 (idxEquiv.symm i).2 0 = z0)) := by
         dsimp [outer]; rw [dif_pos hj]
       rw [h_eq]
       intro q
       rw [accConst_layer]; omega
     · by_cases hj2 : j.val = len + 1
-      · have h_eq : outer i j = accConst n m (decide (evalGuess (idxEquiv.symm i).1 (idxEquiv.symm i).2 (Fin.last len) = target)) := by
+      · have h_eq : outer i j = accConst n m
+          (decide (evalGuess (idxEquiv.symm i).1 (idxEquiv.symm i).2 (Fin.last len) = target)) := by
           dsimp [outer]; rw [dif_neg hj, dif_pos hj2]
         rw [h_eq]
         intro q
         rw [accConst_layer]; omega
-      · have h_eq : outer i j = checkStep ⟨j.val - 1, by omega⟩ (evalGuess (idxEquiv.symm i).1 (idxEquiv.symm i).2 ⟨j.val - 1, by omega⟩) (evalGuess (idxEquiv.symm i).1 (idxEquiv.symm i).2 ⟨j.val, by omega⟩) := by
+      · have h_eq : outer i j = checkStep ⟨j.val - 1, by omega⟩
+          (evalGuess (idxEquiv.symm i).1 (idxEquiv.symm i).2 ⟨j.val - 1, by omega⟩)
+          (evalGuess (idxEquiv.symm i).1 (idxEquiv.symm i).2 ⟨j.val, by omega⟩) := by
           dsimp [outer]; rw [dif_neg hj, dif_neg hj2]
         rw [h_eq]
         intro q
         exact hcs_lay _ _ _ q
   have h_layer_bound : d + 2 + 2 ≤ max (d + 2) 1 + 5 := by omega
   by_cases h_nIdx : nIdx = 0
-  · refine ⟨accConst n m (decide (z0 = target)), wellFormedACC_accConst n m _, fun q => by rw [accConst_layer]; omega, ?_, ?_⟩
+  · refine ⟨accConst n m (decide (z0 = target)), wellFormedACC_accConst n m _,
+      fun q => by rw [accConst_layer]; omega, ?_, ?_⟩
     · rw [accConst_gateCount]; omega
     · intro x; rw [accAccepts_accConst, decide_eq_true_eq]
       have h1 : len = 0 := by
@@ -303,34 +320,49 @@ theorem cascade_aperiodic_layer {len size_letter size_driver d K : Nat}
       rw [h_last, hz0 x]
   · have h_pos : nIdx > 0 := by omega
     have _diag : Nonempty (Fin nIdx) := ⟨⟨0, h_pos⟩⟩
-    refine ⟨accOrAnd outer (d + 2), wellFormedACC_accOrAnd hwf_out hlay_out, fun q => le_trans (accOrAnd_layer_le hlay_out q) h_layer_bound, ?_, ?_⟩
+    refine
+      ⟨accOrAnd outer (d + 2), wellFormedACC_accOrAnd hwf_out hlay_out, fun q => le_trans
+      (accOrAnd_layer_le hlay_out q) h_layer_bound, ?_, ?_⟩
     · simp only [accOrAnd_gateCount]
       have h_inner : ∀ i, (∑ j : Fin (len + 2), (outer i j).gateCount) + 1 ≤
-          (len + 2) * ((Fintype.card L * Fintype.card Y) * (size_letter + size_driver + 1) + 1) + 1 := by
+          (len + 2) * ((Fintype.card L * Fintype.card Y) * (size_letter + size_driver + 1) + 1) + 1
+            := by
         intro i
-        have h_bound : ∀ j : Fin (len + 2), (outer i j).gateCount ≤ (Fintype.card L * Fintype.card Y) * (size_letter + size_driver + 1) + 1 := by
+        have h_bound : ∀ j : Fin (len + 2), (outer i j).gateCount ≤
+          (Fintype.card L * Fintype.card Y) * (size_letter + size_driver + 1) + 1 := by
           intro j
           by_cases hj : j.val = 0
-          · have h_eq : outer i j = accConst n m (decide (evalGuess (idxEquiv.symm i).1 (idxEquiv.symm i).2 0 = z0)) := by
+          · have h_eq : outer i j = accConst n m
+              (decide (evalGuess (idxEquiv.symm i).1 (idxEquiv.symm i).2 0 = z0)) := by
               dsimp [outer]; rw [dif_pos hj]
             rw [h_eq]; rw [accConst_gateCount]; omega
           · by_cases hj2 : j.val = len + 1
-            · have h_eq : outer i j = accConst n m (decide (evalGuess (idxEquiv.symm i).1 (idxEquiv.symm i).2 (Fin.last len) = target)) := by
+            · have h_eq : outer i j = accConst n m
+                (decide
+                (evalGuess (idxEquiv.symm i).1 (idxEquiv.symm i).2 (Fin.last len) = target)) := by
                 dsimp [outer]; rw [dif_neg hj, dif_pos hj2]
               rw [h_eq]; rw [accConst_gateCount]; omega
-            · have h_eq : outer i j = checkStep ⟨j.val - 1, by omega⟩ (evalGuess (idxEquiv.symm i).1 (idxEquiv.symm i).2 ⟨j.val - 1, by omega⟩) (evalGuess (idxEquiv.symm i).1 (idxEquiv.symm i).2 ⟨j.val, by omega⟩) := by
+            · have h_eq : outer i j = checkStep ⟨j.val - 1, by omega⟩
+                (evalGuess (idxEquiv.symm i).1 (idxEquiv.symm i).2 ⟨j.val - 1, by omega⟩)
+                (evalGuess (idxEquiv.symm i).1 (idxEquiv.symm i).2 ⟨j.val, by omega⟩) := by
                 dsimp [outer]; rw [dif_neg hj, dif_neg hj2]
               rw [h_eq]; exact hcs_size _ _ _
-        have hsum : (∑ j : Fin (len + 2), (outer i j).gateCount) ≤ (len + 2) * ((Fintype.card L * Fintype.card Y) * (size_letter + size_driver + 1) + 1) := by
+        have hsum : (∑ j : Fin (len + 2), (outer i j).gateCount) ≤ (len + 2) *
+          ((Fintype.card L * Fintype.card Y) * (size_letter + size_driver + 1) + 1) := by
           exact Finset.sum_le_card_nsmul Finset.univ _ _ (fun j _ => h_bound j) |>.trans (by simp)
         exact Nat.add_le_add_right hsum 1
       have hsum_out : (∑ i : Fin nIdx, ((∑ j : Fin (len + 2), (outer i j).gateCount) + 1)) ≤
-          nIdx * ((len + 2) * ((Fintype.card L * Fintype.card Y) * (size_letter + size_driver + 1) + 1) + 1) := by
+          nIdx *
+            ((len + 2) * ((Fintype.card L * Fintype.card Y) * (size_letter + size_driver + 1) + 1)
+            + 1) := by
         exact Finset.sum_le_card_nsmul Finset.univ _ _ (fun i _ => h_inner i) |>.trans (by simp)
       calc (∑ i : Fin nIdx, ((∑ j : Fin (len + 2), (outer i j).gateCount) + 1)) + 1
-        ≤ nIdx * ((len + 2) * ((Fintype.card L * Fintype.card Y) * (size_letter + size_driver + 1) + 1) + 1) + 1 := Nat.add_le_add_right hsum_out 1
+        ≤ nIdx *
+          ((len + 2) * ((Fintype.card L * Fintype.card Y) * (size_letter + size_driver + 1) + 1) +
+          1) + 1 := Nat.add_le_add_right hsum_out 1
         _ = Fintype.card (Fin K → Fin len) * Fintype.card (Fin (K + 1) → Z) *
-            ((len + 2) * ((Fintype.card L * Fintype.card Y) * (size_letter + size_driver + 1) + 1) + 1) + 1 := by
+            ((len + 2) * ((Fintype.card L * Fintype.card Y) * (size_letter + size_driver + 1) + 1)
+              + 1) + 1 := by
           have hnIdx : nIdx = Fintype.card Index := rfl
           rw [hnIdx, Fintype.card_prod]
     · intro x
@@ -347,13 +379,16 @@ theorem cascade_aperiodic_layer {len size_letter size_driver d K : Nat}
           dsimp [outer] at H
           rw [dif_pos rfl] at H
           exact of_decide_eq_true ((accAccepts_accConst n m _ x).mp H)
-        have hstep : ∀ j : Fin len, evalGuess idx.1 idx.2 j.succ = step (letter j x) (driver j x) (evalGuess idx.1 idx.2 j.castSucc) := by
+        have hstep : ∀ j : Fin len, evalGuess idx.1 idx.2 j.succ = step (letter j x) (driver j x)
+          (evalGuess idx.1 idx.2 j.castSucc) := by
           intro j
           have H := hi ⟨j.val + 1, by omega⟩
           dsimp [outer] at H
           have hj_ne2 : j.val + 1 ≠ len + 1 := by omega
           rw [dif_neg hj_ne2] at H
-          have H_acc := (hcs_acc j (evalGuess idx.1 idx.2 ⟨j.val, by omega⟩) (evalGuess idx.1 idx.2 ⟨j.val + 1, by omega⟩) x).mp H
+          have H_acc :=
+            (hcs_acc j (evalGuess idx.1 idx.2 ⟨j.val, by omega⟩)
+            (evalGuess idx.1 idx.2 ⟨j.val + 1, by omega⟩) x).mp H
           have eq1 : (⟨j.val, by omega⟩ : Fin (len + 1)) = j.castSucc := Fin.ext rfl
           have eq2 : (⟨j.val + 1, by omega⟩ : Fin (len + 1)) = j.succ := Fin.ext rfl
           rw [eq1, eq2] at H_acc
@@ -366,32 +401,40 @@ theorem cascade_aperiodic_layer {len size_letter size_driver d K : Nat}
         rw [← heval (Fin.last len)]
         exact hlen
       · intro htarget
-        have h_nonempty : Nonempty (Fin K → Fin len) := Nonempty.map Prod.fst (Fintype.card_pos_iff.mp (show 0 < Fintype.card Index from h_pos))
-        obtain ⟨times, vals, heval⟩ := exists_guess_of_changes_le (fun j => z j x) (h_changes x) h_nonempty
+        have h_nonempty : Nonempty (Fin K → Fin len) := Nonempty.map Prod.fst
+          (Fintype.card_pos_iff.mp (show 0 < Fintype.card Index from h_pos))
+        obtain ⟨times, vals, heval⟩ := exists_guess_of_changes_le (fun j => z j x) (h_changes x)
+          h_nonempty
         set idx : Index := ⟨times, vals⟩
         refine ⟨idxEquiv idx, fun j => ?_⟩
         dsimp [outer]
         rw [Equiv.symm_apply_apply]
         by_cases hj : j.val = 0
-        · simp [hj]
+        · simp only [hj, ↓reduceDIte]
           refine (accAccepts_accConst n m _ x).mpr (decide_eq_true ?_)
           rw [heval 0, hz0]
         · by_cases hj2 : j.val = len + 1
-          · simp [hj2]
+          · simp only [hj2, Nat.add_eq_zero_iff, one_ne_zero, and_false, ↓reduceDIte]
             refine (accAccepts_accConst n m _ x).mpr (decide_eq_true ?_)
             rw [heval (Fin.last len)]
             exact htarget
-          · simp [hj, hj2]
+          · simp only [hj, ↓reduceDIte, hj2]
             have h1' : j.val - 1 < len := by omega
-            have eq1 : evalGuess idx.1 idx.2 ⟨j.val - 1, by omega⟩ = z (Fin.castSucc ⟨j.val - 1, h1'⟩) x := by
-              have h_eq : (⟨j.val - 1, by omega⟩ : Fin (len + 1)) = (Fin.castSucc ⟨j.val - 1, h1'⟩) := Fin.ext rfl
+            have eq1 : evalGuess idx.1 idx.2 ⟨j.val - 1, by omega⟩ = z
+              (Fin.castSucc ⟨j.val - 1, h1'⟩) x := by
+              have h_eq : (⟨j.val - 1, by omega⟩ : Fin (len + 1)) = (Fin.castSucc ⟨j.val - 1, h1'⟩)
+                := Fin.ext rfl
               rw [h_eq]
               exact heval _
-            have eq2 : evalGuess idx.1 idx.2 ⟨j.val, by omega⟩ = z (Fin.succ ⟨j.val - 1, h1'⟩) x := by
-              have h_eq : (⟨j.val, by omega⟩ : Fin (len + 1)) = (Fin.succ ⟨j.val - 1, h1'⟩) := Fin.ext (show j.val = j.val - 1 + 1 by omega)
+            have eq2 : evalGuess idx.1 idx.2 ⟨j.val, by omega⟩ = z (Fin.succ ⟨j.val - 1, h1'⟩) x :=
+              by
+              have h_eq : (⟨j.val, by omega⟩ : Fin (len + 1)) = (Fin.succ ⟨j.val - 1, h1'⟩) :=
+                Fin.ext (show j.val = j.val - 1 + 1 by omega)
               rw [h_eq]
               exact heval _
-            have H_acc : step (letter ⟨j.val - 1, h1'⟩ x) (driver ⟨j.val - 1, h1'⟩ x) (evalGuess idx.1 idx.2 ⟨j.val - 1, by omega⟩) = evalGuess idx.1 idx.2 ⟨j.val, by omega⟩ := by
+            have H_acc : step (letter ⟨j.val - 1, h1'⟩ x) (driver ⟨j.val - 1, h1'⟩ x)
+              (evalGuess idx.1 idx.2 ⟨j.val - 1, by omega⟩) = evalGuess idx.1 idx.2
+              ⟨j.val, by omega⟩ := by
               rw [eq1, eq2, hz_succ]
             exact (hcs_acc _ _ _ x).mpr H_acc
 

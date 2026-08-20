@@ -117,7 +117,7 @@ theorem permCycleCount_mergeRotation {c : ADRCircuit n} {A : Finset (Fin c.gateC
       (fun d : CircuitDart c => d.source ∈ A) hface (blockDartIn hsep) _ (fun e => ?_)
     have h' : (dartReverse c ((blockDartIn hsep) e).1).source ∈ A :=
       (dart_source_mem_iff hsep _).mp ((blockDartIn hsep) e).2
-    show ((blockDartIn hsep) (rIn.rotation (dartReverse (blockIn c A) e))).1
+    change ((blockDartIn hsep) (rIn.rotation (dartReverse (blockIn c A) e))).1
       = (mergeRotation hsep rIn rOut).rotation (dartReverse c ((blockDartIn hsep) e).1)
     rw [show (mergeRotation hsep rIn rOut).rotation
           (dartReverse c ((blockDartIn hsep) e).1)
@@ -136,7 +136,7 @@ theorem permCycleCount_mergeRotation {c : ADRCircuit n} {A : Finset (Fin c.gateC
       (blockDartOut hsep) _ (fun e => ?_)
     have h' : ¬ (dartReverse c ((blockDartOut hsep) e).1).source ∈ A := fun hmem =>
       ((blockDartOut hsep) e).2 ((dart_source_mem_iff hsep _).mpr hmem)
-    show ((blockDartOut hsep) (rOut.rotation (dartReverse (blockOut c A) e))).1
+    change ((blockDartOut hsep) (rOut.rotation (dartReverse (blockOut c A) e))).1
       = (mergeRotation hsep rIn rOut).rotation (dartReverse c ((blockDartOut hsep) e).1)
     rw [show (mergeRotation hsep rIn rOut).rotation
           (dartReverse c ((blockDartOut hsep) e).1)

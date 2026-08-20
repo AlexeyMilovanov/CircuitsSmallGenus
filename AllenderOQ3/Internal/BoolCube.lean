@@ -1,4 +1,4 @@
-import Mathlib
+import AllenderOQ3.Base
 
 set_option autoImplicit false
 
@@ -72,7 +72,7 @@ theorem eq_unitVec_of_isAtom {a : Fin w → Bool} (ha : IsAtom a) :
 theorem unitVec_injective : Function.Injective (unitVec (w := w)) := by
   intro i j h
   have h2 := congrFun h i
-  simp only [unitVec, decide_eq_true_eq, decide_eq_decide] at h2
+  simp only [unitVec, decide_eq_decide] at h2
   exact h2.mp trivial
 
 /-- An order isomorphism of the Boolean cube permutes the coordinates. -/

@@ -1,4 +1,4 @@
-import Mathlib
+import AllenderOQ3.Base
 import AllenderOQ3.Internal.OptCircuit
 import AllenderOQ3.Internal.OptCircuitCert
 import AllenderOQ3.Internal.OptCircuitInstances
@@ -11,11 +11,11 @@ variable {w : Nat} (hw : 0 < w)
 variable (preds : Fin w → List (Fin w)) (tgtKind : Fin w → ADRGate 1)
 
 def pair_srcVertex (p : Fin w) : LayerVertex (pairCircuit hw preds tgtKind) 0 :=
-  ⟨⟨p.val, by show p.val < 2 * w; omega⟩, Nat.div_eq_of_lt p.isLt⟩
+  ⟨⟨p.val, by change p.val < 2 * w; omega⟩, Nat.div_eq_of_lt p.isLt⟩
 
 def pair_tgtVertex (p : Fin w) : LayerVertex (pairCircuit hw preds tgtKind) 1 :=
-  ⟨⟨w + p.val, by show w + p.val < 2 * w; omega⟩, by
-    show (w + p.val) / w = 1
+  ⟨⟨w + p.val, by change w + p.val < 2 * w; omega⟩, by
+    change (w + p.val) / w = 1
     rw [Nat.add_comm, Nat.add_div_right _ hw, Nat.div_eq_of_lt p.isLt]⟩
 
 theorem pair_srcVertex_injective : Function.Injective (pair_srcVertex hw preds tgtKind) := by
@@ -29,7 +29,8 @@ theorem pair_tgtVertex_injective : Function.Injective (pair_tgtVertex hw preds t
   have h2 : w + a.val = w + b.val := h1
   exact Fin.ext (by omega)
 
-noncomputable def pair_srcListing : CyclicListing (LayerVertex (pairCircuit hw preds tgtKind) 0) where
+noncomputable def pair_srcListing : CyclicListing (LayerVertex (pairCircuit hw preds tgtKind) 0)
+  where
   entries := (List.finRange w).map (pair_srcVertex hw preds tgtKind)
   nodup := List.Nodup.map (pair_srcVertex_injective hw preds tgtKind) (List.nodup_finRange w)
   complete := by
@@ -49,7 +50,8 @@ noncomputable def pair_srcListing : CyclicListing (LayerVertex (pairCircuit hw p
     rw [heq]
     exact List.mem_map_of_mem (List.mem_finRange _)
 
-noncomputable def pair_tgtListing : CyclicListing (LayerVertex (pairCircuit hw preds tgtKind) 1) where
+noncomputable def pair_tgtListing : CyclicListing (LayerVertex (pairCircuit hw preds tgtKind) 1)
+  where
   entries := (List.finRange w).map (pair_tgtVertex hw preds tgtKind)
   nodup := List.Nodup.map (pair_tgtVertex_injective hw preds tgtKind) (List.nodup_finRange w)
   complete := by
@@ -66,13 +68,14 @@ noncomputable def pair_tgtListing : CyclicListing (LayerVertex (pairCircuit hw p
     have heq : a = pair_tgtVertex hw preds tgtKind ⟨a.val.val - w, hb⟩ := by
       apply Subtype.ext
       apply Fin.ext
-      show a.val.val = w + (a.val.val - w)
+      change a.val.val = w + (a.val.val - w)
       omega
     rw [heq]
     exact List.mem_map_of_mem (List.mem_finRange _)
 
 theorem pairCircuit_edge_of (p q : Fin w) (h : q ∈ preds p) :
-    (pairCircuit hw preds tgtKind).edge (pair_srcVertex hw preds tgtKind q).val (pair_tgtVertex hw preds tgtKind p).val = true := by
+    (pairCircuit hw preds tgtKind).edge (pair_srcVertex hw preds tgtKind q).val
+      (pair_tgtVertex hw preds tgtKind p).val = true := by
   dsimp [pairCircuit, pair_srcVertex, pair_tgtVertex]
   simp only [decide_eq_true_eq]
   refine ⟨q.isLt, by omega, ?_⟩
@@ -87,7 +90,8 @@ theorem pairCircuit_edge_of (p q : Fin w) (h : q ∈ preds p) :
 noncomputable def pairArc (p q : Fin w) (h : q ∈ preds p) :
     TransitionArc (pairCircuit hw preds tgtKind) 0 :=
   ⟨((pair_srcVertex hw preds tgtKind q).val, (pair_tgtVertex hw preds tgtKind p).val),
-    pairCircuit_edge_of hw preds tgtKind p q h, (pair_srcVertex hw preds tgtKind q).2, (pair_tgtVertex hw preds tgtKind p).2⟩
+    pairCircuit_edge_of hw preds tgtKind p q h, (pair_srcVertex hw preds tgtKind q).2,
+      (pair_tgtVertex hw preds tgtKind p).2⟩
 
 theorem pairArc_source (p q : Fin w) (h : q ∈ preds p) :
     arcSource (pairArc hw preds tgtKind p q h) = pair_srcVertex hw preds tgtKind q :=
@@ -97,7 +101,8 @@ theorem pairArc_target (p q : Fin w) (h : q ∈ preds p) :
     arcTarget (pairArc hw preds tgtKind p q h) = pair_tgtVertex hw preds tgtKind p :=
   Subtype.ext rfl
 
-noncomputable def pair_emptyListing (m : Nat) : CyclicListing (LayerVertex (pairCircuit hw preds tgtKind) (m + 2)) where
+noncomputable def pair_emptyListing (m : Nat) : CyclicListing
+  (LayerVertex (pairCircuit hw preds tgtKind) (m + 2)) where
   entries := []
   nodup := List.nodup_nil
   complete := by
@@ -112,7 +117,8 @@ noncomputable def pairOrders :
     (ell : Nat) → CyclicListing (LayerVertex (pairCircuit hw preds tgtKind) ell)
   | 0 => pair_srcListing hw preds tgtKind
   | 1 => pair_tgtListing hw preds tgtKind
-  | (m + 2) => pair_emptyListing hw preds tgtKind m -- actually we don't need this since any empty listing of correct type is fine.
+  -- Any empty listing of the correct type would do for the layers above the first two.
+  | (m + 2) => pair_emptyListing hw preds tgtKind m
 
 theorem pairArc_cases (e : TransitionArc (pairCircuit hw preds tgtKind) 0) :
     ∃ (p q : Fin w) (h : q ∈ preds p), e = pairArc hw preds tgtKind p q h := by
@@ -224,10 +230,13 @@ theorem staircasePreds_succ :
 noncomputable def adjOut (q : Fin w) :
     List (TransitionArc (pairCircuit hw (staircasePreds i hi) tgtKind) 0) :=
   if hq : q.val = i.val then
-    [pairArc hw (staircasePreds i hi) tgtKind i i (by rw [staircasePreds_self i hi i (by omega)]; simp),
-     pairArc hw (staircasePreds i hi) tgtKind ⟨i.val + 1, hi⟩ i (by rw [staircasePreds_succ i hi]; simp)]
+    [pairArc hw (staircasePreds i hi) tgtKind i i
+      (by rw [staircasePreds_self i hi i (by omega)]; simp),
+     pairArc hw (staircasePreds i hi) tgtKind ⟨i.val + 1, hi⟩ i
+       (by rw [staircasePreds_succ i hi]; simp)]
   else if hq2 : q.val = i.val + 1 then
-    [pairArc hw (staircasePreds i hi) tgtKind ⟨i.val + 1, hi⟩ ⟨i.val + 1, hi⟩ (by rw [staircasePreds_succ i hi]; simp)]
+    [pairArc hw (staircasePreds i hi) tgtKind ⟨i.val + 1, hi⟩ ⟨i.val + 1, hi⟩
+      (by rw [staircasePreds_succ i hi]; simp)]
   else
     [pairArc hw (staircasePreds i hi) tgtKind q q (by rw [staircasePreds_self i hi q hq2]; simp)]
 
@@ -237,8 +246,11 @@ theorem adjOut_nodup (q : Fin w) : (adjOut hw tgtKind i hi q).Nodup := by
   · refine List.nodup_cons.mpr ⟨?_, List.nodup_singleton _⟩
     intro hmem
     rw [List.mem_singleton] at hmem
-    have h1 : ((pairArc hw (staircasePreds i hi) tgtKind i i (by rw [staircasePreds_self i hi i (by omega)]; simp)).1.2.val : Nat)
-        = ((pairArc hw (staircasePreds i hi) tgtKind ⟨i.val + 1, hi⟩ i (by rw [staircasePreds_succ]; simp)).1.2.val : Nat) := by
+    have h1 :
+      ((pairArc hw (staircasePreds i hi) tgtKind i i
+      (by rw [staircasePreds_self i hi i (by omega)]; simp)).1.2.val : Nat)
+        = ((pairArc hw (staircasePreds i hi) tgtKind ⟨i.val + 1, hi⟩ i
+          (by rw [staircasePreds_succ]; simp)).1.2.val : Nat) := by
       rw [hmem]
     have h2 : w + i.val = w + (i.val + 1) := h1
     omega
@@ -271,10 +283,13 @@ theorem pair_srcPos_of_srcVertex (q : Fin w) :
 noncomputable def adjInc (q : Fin w) :
     List (TransitionArc (pairCircuit hw (staircasePreds i hi) tgtKind) 0) :=
   if hq : q.val = i.val + 1 then
-    [pairArc hw (staircasePreds i hi) tgtKind ⟨i.val + 1, hi⟩ i (by rw [staircasePreds_succ i hi]; simp),
-     pairArc hw (staircasePreds i hi) tgtKind ⟨i.val + 1, hi⟩ ⟨i.val + 1, hi⟩ (by rw [staircasePreds_succ i hi]; simp)]
+    [pairArc hw (staircasePreds i hi) tgtKind ⟨i.val + 1, hi⟩ i
+      (by rw [staircasePreds_succ i hi]; simp),
+     pairArc hw (staircasePreds i hi) tgtKind ⟨i.val + 1, hi⟩ ⟨i.val + 1, hi⟩
+       (by rw [staircasePreds_succ i hi]; simp)]
   else if hq2 : q.val = i.val then
-    [pairArc hw (staircasePreds i hi) tgtKind i i (by rw [staircasePreds_self i hi i (by omega)]; simp)]
+    [pairArc hw (staircasePreds i hi) tgtKind i i
+      (by rw [staircasePreds_self i hi i (by omega)]; simp)]
   else
     [pairArc hw (staircasePreds i hi) tgtKind q q (by rw [staircasePreds_self i hi q hq]; simp)]
 
@@ -310,7 +325,7 @@ theorem pair_tgtPos_tgtVertex (v : LayerVertex (pairCircuit hw (staircasePreds i
     pair_tgtVertex hw (staircasePreds i hi) tgtKind (pair_tgtPos hw tgtKind i hi v) = v := by
   apply Subtype.ext
   apply Fin.ext
-  show w + (v.val.val - w) = v.val.val
+  change w + (v.val.val - w) = v.val.val
   have h1 : v.val.val / w = 1 := v.2
   have h3 : w ≤ v.val.val := by
     by_contra hcon
@@ -322,7 +337,7 @@ theorem pair_tgtPos_tgtVertex (v : LayerVertex (pairCircuit hw (staircasePreds i
 theorem pair_tgtPos_of_tgtVertex (p : Fin w) :
     pair_tgtPos hw tgtKind i hi (pair_tgtVertex hw (staircasePreds i hi) tgtKind p) = p := by
   apply Fin.ext
-  show (w + p.val) - w = p.val
+  change (w + p.val) - w = p.val
   omega
 
 theorem adjInc_exact (v : LayerVertex (pairCircuit hw (staircasePreds i hi) tgtKind) 1)
@@ -339,7 +354,8 @@ theorem adjInc_exact (v : LayerVertex (pairCircuit hw (staircasePreds i hi) tgtK
     unfold adjInc at hmem
     split at hmem
     · next hq =>
-      have htgt : e.1.2 = (pair_tgtVertex hw (staircasePreds i hi) tgtKind ⟨i.val + 1, hi⟩).val := by
+      have htgt : e.1.2 = (pair_tgtVertex hw (staircasePreds i hi) tgtKind ⟨i.val + 1, hi⟩).val :=
+        by
         rcases List.mem_cons.mp hmem with h | h
         · rw [h]; rfl
         · rw [List.mem_singleton] at h
@@ -347,7 +363,7 @@ theorem adjInc_exact (v : LayerVertex (pairCircuit hw (staircasePreds i hi) tgtK
       rw [htgt]
       apply Fin.ext
       have hq' : v.val.val - w = i.val + 1 := hq
-      show w + (i.val + 1) = v.val.val
+      change w + (i.val + 1) = v.val.val
       omega
     · split at hmem
       · next hq2 =>
@@ -357,7 +373,7 @@ theorem adjInc_exact (v : LayerVertex (pairCircuit hw (staircasePreds i hi) tgtK
         rw [htgt]
         apply Fin.ext
         have hq' : v.val.val - w = i.val := hq2
-        show w + i.val = v.val.val
+        change w + i.val = v.val.val
         omega
       · next hq2 =>
         rw [List.mem_singleton] at hmem
@@ -370,7 +386,8 @@ theorem adjInc_exact (v : LayerVertex (pairCircuit hw (staircasePreds i hi) tgtK
       rw [← h2, pair_tgtPos_of_tgtVertex]
     subst hp'
     by_cases hp1 : (pair_tgtPos hw tgtKind i hi v).val = i.val + 1
-    · have hsp : staircasePreds i hi (pair_tgtPos hw tgtKind i hi v) = [i, (⟨i.val + 1, hi⟩ : Fin w)] := by
+    · have hsp : staircasePreds i hi (pair_tgtPos hw tgtKind i hi v) =
+        [i, (⟨i.val + 1, hi⟩ : Fin w)] := by
         unfold staircasePreds
         rw [if_pos hp1]
       have hmem2 : q' ∈ [i, (⟨i.val + 1, hi⟩ : Fin w)] := hsp ▸ h'
@@ -390,7 +407,8 @@ theorem adjInc_exact (v : LayerVertex (pairCircuit hw (staircasePreds i hi) tgtK
       · unfold adjInc
         rw [dif_neg hp1, dif_pos hp2]
         refine List.mem_singleton.mpr ?_
-        exact pairArc_eq_of_val hw (staircasePreds i hi) tgtKind h' _ (Fin.ext hp2) (hmem2.trans (Fin.ext hp2))
+        exact pairArc_eq_of_val hw (staircasePreds i hi) tgtKind h' _ (Fin.ext hp2)
+          (hmem2.trans (Fin.ext hp2))
       · unfold adjInc
         rw [dif_neg hp1, dif_neg hp2]
         refine List.mem_singleton.mpr ?_
@@ -421,7 +439,7 @@ theorem adjOut_succ_eq :
           (by rw [staircasePreds_succ i hi]; simp)] := by
   unfold adjOut
   rw [dif_neg (show ¬ ((⟨i.val + 1, hi⟩ : Fin w).val = i.val) by
-        show ¬ (i.val + 1 = i.val); omega),
+        change ¬ (i.val + 1 = i.val); omega),
     dif_pos (show (⟨i.val + 1, hi⟩ : Fin w).val = i.val + 1 from rfl)]
 
 /-- The incoming block of target `i`: the diagonal arc `i → i`. -/
@@ -447,7 +465,7 @@ theorem pair_staircase_eq :
       (fun u => adjOut hw tgtKind i hi (pair_srcPos hw tgtKind i hi u)) =
     (pair_tgtListing hw (staircasePreds i hi) tgtKind).entries.flatMap
       (fun v => adjInc hw tgtKind i hi (pair_tgtPos hw tgtKind i hi v)) := by
-  show ((List.finRange w).map (pair_srcVertex hw (staircasePreds i hi) tgtKind)).flatMap _
+  change ((List.finRange w).map (pair_srcVertex hw (staircasePreds i hi) tgtKind)).flatMap _
     = ((List.finRange w).map (pair_tgtVertex hw (staircasePreds i hi) tgtKind)).flatMap _
   rw [flatMap_map', flatMap_map']
   rw [show (List.finRange w).flatMap
@@ -488,7 +506,8 @@ theorem adjOut_exact (u : LayerVertex (pairCircuit hw (staircasePreds i hi) tgtK
     · split at hmem
       · next hq2 =>
         rw [List.mem_singleton] at hmem
-        have hsrc : e.1.1 = (pair_srcVertex hw (staircasePreds i hi) tgtKind ⟨i.val + 1, hi⟩).val := by
+        have hsrc : e.1.1 = (pair_srcVertex hw (staircasePreds i hi) tgtKind ⟨i.val + 1, hi⟩).val
+          := by
           rw [hmem]; rfl
         rw [hsrc]
         apply Fin.ext
@@ -568,7 +587,7 @@ theorem pairGateTrans_memCF (h_comp : ∀ p, (tgtKind p).isComputation) :
     pairCircuit_totalWidth hw (staircasePreds i hi) tgtKind, ?_,
     pairCircuit_constantFreeLayer hw (staircasePreds i hi) tgtKind h_comp
       (staircasePreds_nonempty i hi), rfl⟩
-  show (pair_tgtListing hw (staircasePreds i hi) tgtKind).entries.length = w
+  change (pair_tgtListing hw (staircasePreds i hi) tgtKind).entries.length = w
   simp [pair_tgtListing]
 
 end AdjPair

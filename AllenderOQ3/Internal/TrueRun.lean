@@ -5,7 +5,8 @@ namespace AllenderOQ3.Internal
 
 variable {w : Nat}
 
-/-- C2: If a contiguous sequence of coordinates are all true, the start and end belong to the same piece. -/
+/-- C2: If a contiguous sequence of coordinates are all true, the start and end belong to the same
+  piece. -/
 theorem same_piece_of_true_run {z : Config w} {a b : Fin w} {d : Nat}
     (h_run : ∀ k ≤ d, z (finShift k a) = true)
     (h_end : finShift d a = b) :

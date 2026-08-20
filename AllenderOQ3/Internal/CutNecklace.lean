@@ -66,8 +66,8 @@ theorem dart_layer_cases (hpl : ProperLayered c) (d : CircuitDart c) :
 
 /-! ## First-return machinery -/
 
-theorem exists_firstReturn {α : Type} [Fintype α] (p : Equiv.Perm α)
-    (S : α → Prop) [DecidablePred S] (x : { a // S a }) :
+theorem exists_firstReturn {α : Type} [Finite α] (p : Equiv.Perm α)
+    (S : α → Prop) (x : { a // S a }) :
     ∃ k ≥ 1, S ((p ^ k) x.1) := by
   refine ⟨orderOf p, orderOf_pos p, ?_⟩
   have h : (p ^ orderOf p) x.1 = x.1 := by

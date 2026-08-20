@@ -799,13 +799,13 @@ theorem single_orbit_all (hpl : ProperLayered c)
       exact exit_chain hpl hS hT r hZero k e f f' he.symm (by rw [hk, he'])
 
 /-- **Completeness off the source layer.**  This is the curated obligation; the
-hypothesis `hne` (that the graph source does not sit on layer `ell`) turned out
+hypothesis `_hne` (that the graph source does not sit on layer `ell`) turned out
 to be unnecessary, since `single_orbit_all` covers the source layer as well. -/
 theorem necklaceWord_complete_off_source (hpl : ProperLayered c)
     (r : OrientableRotation c) (hg : rotationGenus r = 0)
     (hsrc : ∃! s, IsGraphSource c s) (hsnk : ∃! t, IsGraphSink c t)
     (ell : Nat) (e : TransitionArc c ell)
-    (hne : ∀ s, IsGraphSource c s → c.layer s ≠ ell) :
+    (_hne : ∀ s, IsGraphSource c s → c.layer s ≠ ell) :
     e ∈ necklaceWord hpl r ell := by
   refine necklaceWord_complete_of_single_orbit hpl r ?_ e
   intro h x

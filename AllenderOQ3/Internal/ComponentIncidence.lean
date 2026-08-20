@@ -14,7 +14,8 @@ variable (hfull : (cert.layerOrder (ell + 1)).entries.length = w)
 variable (hcf : ConstantFreeLayer c ell)
 variable (x : Config w)
 
-/-- The neighbour map: associates an output piece K to an input piece I. Returns ⊥ if K is not a piece. -/
+/-- The neighbour map: associates an output piece K to an input piece I. Returns ⊥ if K is not a
+  piece. -/
 noncomputable def nbr (K : Config w) : Config w :=
   if hK : K ∈ intervalsOf (layerTransMap c cert xIn ell x) then
     have hw : 0 < w := by
@@ -24,7 +25,8 @@ noncomputable def nbr (K : Config w) : Config w :=
     have hwlen : 0 < lenOf K := (eq_pieceConfig_canonical h1 hw).1
     have hc : K = pieceConfig (startOf hw K) (lenOf K) := (eq_pieceConfig_canonical h1 hw).2.2
     have h2 : K (startOf hw K) = true := by
-      have hc_app : K (startOf hw K) = pieceConfig (startOf hw K) (lenOf K) (startOf hw K) := congrFun hc _
+      have hc_app : K (startOf hw K) = pieceConfig (startOf hw K) (lenOf K) (startOf hw K) :=
+        congrFun hc _
       rw [hc_app, pieceConfig_true_iff]
       exact ⟨0, hwlen, by simp⟩
     have h3 : layerTransMap c cert xIn ell x (startOf hw K) = true :=
@@ -53,7 +55,8 @@ theorem nbr_mem_intervalsOf (K : Config w) (hK : K ∈ intervalsOf (layerTransMa
   have hwlen : 0 < lenOf K := (eq_pieceConfig_canonical h1 hw).1
   have hc : K = pieceConfig (startOf hw K) (lenOf K) := (eq_pieceConfig_canonical h1 hw).2.2
   have h2 : K (startOf hw K) = true := by
-    have hc_app : K (startOf hw K) = pieceConfig (startOf hw K) (lenOf K) (startOf hw K) := congrFun hc _
+    have hc_app : K (startOf hw K) = pieceConfig (startOf hw K) (lenOf K) (startOf hw K) :=
+      congrFun hc _
     rw [hc_app, pieceConfig_true_iff]
     exact ⟨0, hwlen, by simp⟩
   have h3 : layerTransMap c cert xIn ell x (startOf hw K) = true :=
@@ -81,7 +84,8 @@ theorem touch_nbr (K : Config w) (hK : K ∈ intervalsOf (layerTransMap c cert x
   have hwlen : 0 < lenOf K := (eq_pieceConfig_canonical h1 hw).1
   have hc : K = pieceConfig (startOf hw K) (lenOf K) := (eq_pieceConfig_canonical h1 hw).2.2
   have h2 : K (startOf hw K) = true := by
-    have hc_app : K (startOf hw K) = pieceConfig (startOf hw K) (lenOf K) (startOf hw K) := congrFun hc _
+    have hc_app : K (startOf hw K) = pieceConfig (startOf hw K) (lenOf K) (startOf hw K) :=
+      congrFun hc _
     rw [hc_app, pieceConfig_true_iff]
     exact ⟨0, hwlen, by simp⟩
   have h3 : layerTransMap c cert xIn ell x (startOf hw K) = true :=
@@ -95,7 +99,7 @@ theorem touch_nbr (K : Config w) (hK : K ∈ intervalsOf (layerTransMap c cert x
   let hx := Classical.choose_spec (Classical.choose_spec h4)
   let h5 := exists_piece_mem hx
   refine ⟨startOf hw K, ⟨u, layer_pred_eq c hN.1 hu⟩, h2, hu, ?_⟩
-  show Classical.choose h5
+  change Classical.choose h5
       (idxOfVtx c cert ell (layerEntries_length_le hW ell) ⟨u, layer_pred_eq c hN.1 hu⟩) = true
   rw [← vertCoord_eq_idxOfVtx]
   exact (Classical.choose_spec h5).2

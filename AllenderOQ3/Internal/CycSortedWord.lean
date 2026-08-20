@@ -1,4 +1,5 @@
-import Mathlib
+import Mathlib.Data.List.TakeWhile
+import AllenderOQ3.Base
 import AllenderOQ3.Internal.IncidenceToolkit
 
 /-!

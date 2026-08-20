@@ -1,4 +1,4 @@
-import Mathlib
+import AllenderOQ3.Base
 import AllenderOQ3.Internal.CycSortedWord
 import AllenderOQ3.Internal.CFLayerBuilder
 import AllenderOQ3.Internal.ComponentGateFacts

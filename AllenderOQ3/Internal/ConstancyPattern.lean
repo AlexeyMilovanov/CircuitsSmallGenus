@@ -1,4 +1,4 @@
-import Mathlib
+import AllenderOQ3.Base
 import AllenderOQ3.Internal.TransitionMonoid
 
 namespace AllenderOQ3.Internal
@@ -14,7 +14,8 @@ def AgreeOnLive {w : Nat} (σ : ConstancyPattern w) (z z' : Config w) : Prop :=
 def emptyPattern (w : Nat) : ConstancyPattern w := fun _ => none
 
 open Classical in
-noncomputable def propagate {w : Nat} (g : TransMonoid w) (σ : ConstancyPattern w) : ConstancyPattern w :=
+noncomputable def propagate {w : Nat} (g : TransMonoid w) (σ : ConstancyPattern w) :
+  ConstancyPattern w :=
   fun i =>
     if h : ∃ b, ∀ z, Respects σ z → runTrans g z i = b then
       some (Classical.choose h)
@@ -22,7 +23,8 @@ noncomputable def propagate {w : Nat} (g : TransMonoid w) (σ : ConstancyPattern
       none
 
 open Classical in
-theorem respects_propagate {w : Nat} {g : TransMonoid w} {σ : ConstancyPattern w} {z : Config w} (hz : Respects σ z) : Respects (propagate g σ) (runTrans g z) := by
+theorem respects_propagate {w : Nat} {g : TransMonoid w} {σ : ConstancyPattern w} {z : Config w}
+  (hz : Respects σ z) : Respects (propagate g σ) (runTrans g z) := by
   intro i b h_prop
   dsimp [propagate] at h_prop
   split_ifs at h_prop with h

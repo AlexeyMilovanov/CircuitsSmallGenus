@@ -1,4 +1,4 @@
-import Mathlib
+import AllenderOQ3.Base
 import AllenderOQ3.Internal.ConstancyPattern
 import AllenderOQ3.Internal.ConstantFreeLayers
 import AllenderOQ3.Internal.CFPairGateSemantics

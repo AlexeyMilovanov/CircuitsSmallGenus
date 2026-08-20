@@ -314,7 +314,7 @@ theorem rTrivialMonoid_of_idem_comm (M : Type) [CommMonoid M]
   rintro a b ⟨u, rfl⟩ ⟨v, hv⟩
   refine Eq.symm ?_
   calc a * u = (a * u * v) * u := by rw [hv]
-    _ = a * (u * u) * v := by simp [mul_comm, mul_assoc, mul_left_comm]
+    _ = a * (u * u) * v := by simp [mul_comm, mul_left_comm]
     _ = a * u * v := by rw [hidem u]
     _ = a := hv
 

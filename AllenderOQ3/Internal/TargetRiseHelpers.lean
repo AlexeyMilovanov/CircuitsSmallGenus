@@ -196,7 +196,7 @@ def targetOthers (p : Fin w) : List (Fin w) :=
 
 theorem targetCycle_eq_rotate (p : Fin w) :
     p :: targetOthers p = (List.finRange w).rotate p.val := by
-  have hp : p.val < (List.finRange w).length := by simpa using p.isLt
+  have hp : p.val < (List.finRange w).length := by simp
   rw [List.rotate_eq_drop_append_take (Nat.le_of_lt hp),
     List.drop_eq_getElem_cons hp, List.getElem_finRange]
   rfl
@@ -243,8 +243,8 @@ theorem targetOthers_head (hw2 : 1 < w) (p : Fin w) :
   have hheadEq :
       (targetOthers p).head? =
         (D.map (fun k => finShift k.val p)).head? := congrArg List.head? hEq
-  rw [List.head?_eq_head (targetOthers_ne_nil hw2 p),
-    List.head?_eq_head hmapNe, List.head_map] at hheadEq
+  rw [List.head?_eq_some_head (targetOthers_ne_nil hw2 p),
+    List.head?_eq_some_head hmapNe, List.head_map] at hheadEq
   have hheadD : D.head hDne = (⟨1, hw2⟩ : Fin w) := by
     dsimp [D]
     rw [List.head_drop, List.getElem_finRange]
@@ -267,8 +267,8 @@ theorem targetOthers_getLast (hw2 : 1 < w) (p : Fin w) :
   have hlastEq :
       (targetOthers p).getLast? =
         (D.map (fun k => finShift k.val p)).getLast? := congrArg List.getLast? hEq
-  rw [List.getLast?_eq_getLast (targetOthers_ne_nil hw2 p),
-    List.getLast?_eq_getLast hmapNe, List.getLast_map] at hlastEq
+  rw [List.getLast?_eq_some_getLast (targetOthers_ne_nil hw2 p),
+    List.getLast?_eq_some_getLast hmapNe, List.getLast_map] at hlastEq
   have hfinNe : List.finRange w ≠ [] := by simp [Nat.ne_of_gt hw]
   have hlastFin : (List.finRange w).getLast hfinNe =
       (⟨w - 1, by omega⟩ : Fin w) := by

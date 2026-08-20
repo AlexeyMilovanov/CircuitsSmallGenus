@@ -57,7 +57,9 @@ theorem intervalCount_le_of_constantFreeLayer {g : TransMonoid w}
     rw [layerTrans, runTrans_ofConfigMap]
   rw [h_runTrans]
   rw [intervalCount_eq_card_intervalsOf, intervalCount_eq_card_intervalsOf]
-  exact Finset.card_le_card_of_injOn (nbr c cert xIn ell hN hW hfull hcf x) (nbr_mem_intervalsOf c cert xIn ell hN hW hfull hcf x) (nbr_injOn c cert xIn ell hN hW hfull hcf x)
+  exact Finset.card_le_card_of_injOn (nbr c cert xIn ell hN hW hfull hcf x)
+    (nbr_mem_intervalsOf c cert xIn ell hN hW hfull hcf x)
+    (nbr_injOn c cert xIn ell hN hW hfull hcf x)
 
 /-- **T2b-gen (open leaf): the per-layer equality case.** -/
 theorem intervalsOf_image_of_constantFreeLayer {g : TransMonoid w}
@@ -72,13 +74,16 @@ theorem intervalsOf_image_of_constantFreeLayer {g : TransMonoid w}
     rw [h_runTrans] at h1
     rw [intervalCount_eq_card_intervalsOf, intervalCount_eq_card_intervalsOf] at h1
     exact h1
-  have h_surj : Set.SurjOn (nbr c cert xIn ell hN hW hfull hcf x) (intervalsOf (layerTransMap c cert xIn ell x)) (intervalsOf x) := by
+  have h_surj : Set.SurjOn (nbr c cert xIn ell hN hW hfull hcf x)
+    (intervalsOf (layerTransMap c cert xIn ell x)) (intervalsOf x) := by
     apply Finset.surjOn_of_injOn_of_card_le
     · exact nbr_mem_intervalsOf c cert xIn ell hN hW hfull hcf x
     · exact nbr_injOn c cert xIn ell hN hW hfull hcf x
     · rw [heq_card]
-  have h_bij : Set.BijOn (nbr c cert xIn ell hN hW hfull hcf x) (intervalsOf (layerTransMap c cert xIn ell x)) (intervalsOf x) :=
-    ⟨nbr_mem_intervalsOf c cert xIn ell hN hW hfull hcf x, nbr_injOn c cert xIn ell hN hW hfull hcf x, h_surj⟩
+  have h_bij : Set.BijOn (nbr c cert xIn ell hN hW hfull hcf x)
+    (intervalsOf (layerTransMap c cert xIn ell x)) (intervalsOf x) :=
+    ⟨nbr_mem_intervalsOf c cert xIn ell hN hW hfull hcf x, nbr_injOn c cert xIn ell hN hW hfull hcf
+      x, h_surj⟩
   ext K
   rw [Finset.mem_image]
   constructor
@@ -88,13 +93,15 @@ theorem intervalsOf_image_of_constantFreeLayer {g : TransMonoid w}
     have hI : I ∈ intervalsOf x := nbr_mem_intervalsOf c cert xIn ell hN hW hfull hcf x K hK
     use I
     refine ⟨hI, ?_⟩
-    have h_runTrans_I : runTrans (layerTrans c cert xIn ell) I = layerTransMap c cert xIn ell I := by
+    have h_runTrans_I : runTrans (layerTrans c cert xIn ell) I = layerTransMap c cert xIn ell I :=
+      by
       rw [layerTrans, runTrans_ofConfigMap]
     rw [h_runTrans_I]
     apply runTrans_pieceConfig_eq_of_nbr c cert xIn ell hN hW hfull hcf x hK rfl h_bij
   · rintro ⟨I, hI, rfl⟩
     obtain ⟨K', hK', hK'_eq⟩ := h_surj hI
-    have h_runTrans_I : runTrans (layerTrans c cert xIn ell) I = layerTransMap c cert xIn ell I := by
+    have h_runTrans_I : runTrans (layerTrans c cert xIn ell) I = layerTransMap c cert xIn ell I :=
+      by
       rw [layerTrans, runTrans_ofConfigMap]
     rw [h_runTrans_I]
     have h_eq : layerTransMap c cert xIn ell I = K' := by
@@ -128,8 +135,7 @@ def componentSubmonoid (w : Nat) : Submonoid (TransMonoid w) where
         rfl
       rw [h1, Finset.image_id]
   mul_mem' := by
-    intro a b ha hb
-    intro x
+    intro a b ha hb x
     have hmul : runTrans (a * b) x = runTrans b (runTrans a x) := runTrans_mul a b x
     have hb1 := hb (runTrans a x)
     have ha1 := ha x
@@ -148,7 +154,7 @@ def componentSubmonoid (w : Nat) : Submonoid (TransMonoid w) where
       rw [hmul, himb, hima, Finset.image_image]
       refine Finset.image_congr ?_
       intro y _
-      show runTrans b (runTrans a y) = runTrans (a * b) y
+      change runTrans b (runTrans a y) = runTrans (a * b) y
       rw [runTrans_mul]
 
 /-- The constant-free submonoid satisfies the component lemma, modulo the two
@@ -157,8 +163,7 @@ theorem mem_componentSubmonoid_of_mem_nonCrossingCF {g : TransMonoid w}
     (hg : g ∈ NonCrossingCF w) : g ∈ componentSubmonoid w := by
   have hle : NonCrossingCF w ≤ componentSubmonoid w := by
     refine Submonoid.closure_le.mpr ?_
-    intro f hf
-    intro x
+    intro f hf x
     exact ⟨intervalCount_le_of_constantFreeLayer hf x,
       fun heq => intervalsOf_image_of_constantFreeLayer hf heq⟩
   exact hle hg

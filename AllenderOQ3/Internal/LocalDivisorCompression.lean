@@ -1,3 +1,4 @@
+import Mathlib.Data.List.GetD
 import AllenderOQ3.Internal.LocalDivisorMarked
 import AllenderOQ3.Internal.PredCirc
 import AllenderOQ3.Internal.MonoidWordACCGen
@@ -90,6 +91,8 @@ theorem localDivisor_telescope {M : Type} [Monoid M] {c : M}
   LocalDivisor.mul_val' hy
 
 set_option maxHeartbeats 2000000 in
+-- The marked compression construction elaborates a single very large term, so it
+-- needs more than the default heartbeat budget.
 /-- **S2: the marked compression lemma.**  For a requested block `[a, b)` the
 circuit guesses the first and the last mark `p'`, `q'` of the block, the two
 mark-free end gaps (evaluated in `⟨B⟩` by the recursive circuits `BN` of the
@@ -259,7 +262,7 @@ theorem monoidWordACCGen_compression {M : Type} [Monoid M] [Finite M] (c : M)
         omega
       have hsmall0 : S ^ p3 ≤ S ^ (p3 + 6) := pow_bnd_mono hS2 (by omega)
       rcases u with ⟨j, uu⟩ | bb
-      · show HasPredCirc n m_N (dd + 4) (S ^ (p3 + 6))
+      · change HasPredCirc n m_N (dd + 4) (S ^ (p3 + 6))
           (fun x => (i < (j : Nat) ∧ (j : Nat) < b ∧ LocalDivisor.gap c ((uu : NN) : M) = v) ∧
             ((lett i x = c ∧ lett (j : Nat) x = c) ∧
               ((∀ t, i + 1 ≤ t → t < (j : Nat) → lett t x ≠ c) ∧
@@ -277,7 +280,7 @@ theorem monoidWordACCGen_compression {M : Type} [Monoid M] [Finite M] (c : M)
           intro x
           exact ⟨fun h => h.elim, fun h => hcond h.1⟩
       · rcases bb with _ | _
-        · show HasPredCirc n m_N (dd + 4) (S ^ (p3 + 6))
+        · change HasPredCirc n m_N (dd + 4) (S ^ (p3 + 6))
             (fun x => v = 1 ∧ (lett i x = c ∧ ∀ t, i + 1 ≤ t → t < b → lett t x ≠ c))
           by_cases hv : v = (1 : LocalDivisor c)
           · have hA1 := hasPredCirc_and (hMkN i) (hFreeN (i + 1) b (by omega))
@@ -287,7 +290,7 @@ theorem monoidWordACCGen_compression {M : Type} [Monoid M] [Finite M] (c : M)
           · refine hasPredCirc_false.mono (by omega) (hSp _) ?_
             intro x
             exact ⟨fun h => h.elim, fun h => hv h.1⟩
-        · show HasPredCirc n m_N (dd + 4) (S ^ (p3 + 6)) (fun x => v = 1 ∧ lett i x ≠ c)
+        · change HasPredCirc n m_N (dd + 4) (S ^ (p3 + 6)) (fun x => v = 1 ∧ lett i x ≠ c)
           by_cases hv : v = (1 : LocalDivisor c)
           · refine (hNotMkN i).mono (by omega) hsmall0 ?_
             intro x
@@ -472,7 +475,7 @@ theorem monoidWordACCGen_compression {M : Type} [Monoid M] [Finite M] (c : M)
             have := hSp p5; omega
           exact le_trans h1 hbig0
         rcases u with ⟨⟨p', q'⟩, ⟨u0, uk⟩, gm⟩ | u0
-        · show HasPredCirc n m_D (dfin + 6) (S ^ (p5 + 8))
+        · change HasPredCirc n m_D (dfin + 6) (S ^ (p5 + 8))
             (fun x => (a ≤ (p' : Nat) ∧ (p' : Nat) ≤ (q' : Nat) ∧ (q' : Nat) < b ∧
                 ((u0 : NN) : M) * gm.val * ((uk : NN) : M) = g) ∧
               (((lett (p' : Nat) x = c ∧ lett (q' : Nat) x = c) ∧
@@ -502,7 +505,7 @@ theorem monoidWordACCGen_compression {M : Type} [Monoid M] [Finite M] (c : M)
           · refine hasPredCirc_false.mono (by omega) (hSp _) ?_
             intro x
             exact ⟨fun h => h.elim, fun h => hcond h.1⟩
-        · show HasPredCirc n m_D (dfin + 6) (S ^ (p5 + 8))
+        · change HasPredCirc n m_D (dfin + 6) (S ^ (p5 + 8))
             (fun x => ((u0 : NN) : M) = g ∧
               ((∀ t, a ≤ t → t < b → lett t x ≠ c) ∧ blockProd uw 0 a b x = u0))
           by_cases hcond : ((u0 : NN) : M) = g

@@ -28,8 +28,10 @@ theorem faceOrbit_has_up_and_down (hP : ProperLayered c) (r : OrientableRotation
     use d
     rw [Finset.mem_filter]
     exact ⟨Finset.mem_univ _, Equiv.Perm.SameCycle.rfl⟩
-  obtain ⟨max_d, hmax_in, hmax_le⟩ := Finset.exists_max_image orbit (fun x => c.layer x.source) h_orbit
-  obtain ⟨min_d, hmin_in, hmin_le⟩ := Finset.exists_min_image orbit (fun x => c.layer x.source) h_orbit
+  obtain ⟨max_d, hmax_in, hmax_le⟩ := Finset.exists_max_image orbit (fun x => c.layer x.source)
+    h_orbit
+  obtain ⟨min_d, hmin_in, hmin_le⟩ := Finset.exists_min_image orbit (fun x => c.layer x.source)
+    h_orbit
   
   have h_max_next : p max_d ∈ orbit := by
     rw [Finset.mem_filter] at hmax_in ⊢
@@ -60,7 +62,8 @@ theorem faceOrbit_has_up_and_down (hP : ProperLayered c) (r : OrientableRotation
     · have h_up := layer_of_dartIsUp hP max_d h
       omega
 
-/-- Every face orbit contains a dart `d` with `dartIsUp d ∧ dartIsUp (r.rotation d)` and `r.rotation d` in that orbit. -/
+/-- Every face orbit contains a dart `d` with `dartIsUp d ∧ dartIsUp (r.rotation d)` and
+  `r.rotation d` in that orbit. -/
 theorem exists_minCorner_in_faceOrbit (hP : ProperLayered c) (r : OrientableRotation c)
     (d0 : CircuitDart c) :
     ∃ d : CircuitDart c, dartIsUp d = true ∧ dartIsUp (r.rotation d) = true ∧
@@ -82,7 +85,6 @@ theorem exists_minCorner_in_faceOrbit (hP : ProperLayered c) (r : OrientableRota
     apply Subtype.ext
     rw [Equiv.Perm.subtypePerm_pow]
     exact hk
-
   let pred : { x // S x } → Bool := fun x => !(dartIsUp x.1)
   have hup := faceOrbit_has_up_and_down hP r d0
   obtain ⟨k_up, hk_up⟩ := hup.1
@@ -132,10 +134,12 @@ theorem exists_minCorner_in_faceOrbit (hP : ProperLayered c) (r : OrientableRota
 
 theorem card_minCorners_ge_faceCount (hP : ProperLayered c) (r : OrientableRotation c) :
     permCycleCount (facePermutation r) ≤
-    (Finset.univ.filter (fun d : CircuitDart c => dartIsUp d = true ∧ dartIsUp (r.rotation d) = true)).card := by
+    (Finset.univ.filter
+      (fun d : CircuitDart c => dartIsUp d = true ∧ dartIsUp (r.rotation d) = true)).card := by
   classical
   let p := facePermutation r
-  let M := Finset.univ.filter (fun d : CircuitDart c => dartIsUp d = true ∧ dartIsUp (r.rotation d) = true)
+  let M := Finset.univ.filter
+    (fun d : CircuitDart c => dartIsUp d = true ∧ dartIsUp (r.rotation d) = true)
   let R (x y : CircuitDart c) : Prop := ∃ k : Nat, (p ^ k) x = y
   have hR : Equivalence R := by
     constructor
@@ -146,7 +150,8 @@ theorem card_minCorners_ge_faceCount (hP : ProperLayered c) (r : OrientableRotat
   let rank := fun y => (Fintype.equivFin (CircuitDart c) y).val
   let S := Finset.univ.filter (fun x => ∀ y, R x y → rank x ≤ rank y)
   have h_permCycle : permCycleCount p = S.card := by rfl
-  let f (x : CircuitDart c) : CircuitDart c := Classical.choose (exists_minCorner_in_faceOrbit hP r x)
+  let f (x : CircuitDart c) : CircuitDart c := Classical.choose
+    (exists_minCorner_in_faceOrbit hP r x)
   have hf_spec (x : CircuitDart c) := Classical.choose_spec (exists_minCorner_in_faceOrbit hP r x)
   have h_img : ∀ x ∈ S, f x ∈ M := by
     intro x _
@@ -161,7 +166,8 @@ theorem card_minCorners_ge_faceCount (hP : ProperLayered c) (r : OrientableRotat
     have h1_symm' : p.SameCycle (r.rotation (f y)) x := by
       rw [← heq]
       exact h1_symm
-    have h_same : p.SameCycle x y := Equiv.Perm.SameCycle.symm (Equiv.Perm.SameCycle.trans h2 h1_symm')
+    have h_same : p.SameCycle x y := Equiv.Perm.SameCycle.symm
+      (Equiv.Perm.SameCycle.trans h2 h1_symm')
     have hxy : R x y := h_same.exists_nat_pow_eq
     have hrank_inj : Function.Injective rank := by
       intro a b hab
@@ -179,14 +185,18 @@ theorem card_minCorners_ge_faceCount (hP : ProperLayered c) (r : OrientableRotat
 
 theorem sum_switchCount_eq (r : OrientableRotation c) :
     ∑ v : Fin c.gateCount, switchCount r v =
-    (Finset.univ.filter (fun d : CircuitDart c => dartIsUp d = true ∧ dartIsUp (r.rotation d) = false)).card := by
+    (Finset.univ.filter
+      (fun d : CircuitDart c => dartIsUp d = true ∧ dartIsUp (r.rotation d) = false)).card := by
   classical
-  let T := Finset.univ.filter (fun d : CircuitDart c => dartIsUp d = true ∧ dartIsUp (r.rotation d) = false)
+  let T := Finset.univ.filter
+    (fun d : CircuitDart c => dartIsUp d = true ∧ dartIsUp (r.rotation d) = false)
   have h_biUnion : T = Finset.univ.biUnion (fun v => T.filter (fun d => d.source = v)) := by
     ext d
     simp only [T, Finset.mem_biUnion, Finset.mem_univ, true_and, Finset.mem_filter]
     exact ⟨fun h => ⟨d.source, h, rfl⟩, fun ⟨v, h, hd⟩ => h⟩
-  have h_disj : (↑(Finset.univ : Finset (Fin c.gateCount)) : Set (Fin c.gateCount)).PairwiseDisjoint (fun v => T.filter (fun d => d.source = v)) := by
+  have h_disj :
+    (↑(Finset.univ : Finset (Fin c.gateCount)) : Set (Fin c.gateCount)).PairwiseDisjoint
+    (fun v => T.filter (fun d => d.source = v)) := by
     intro v1 _ v2 _ hne
     dsimp [Function.onFun]
     rw [Finset.disjoint_filter]
@@ -207,13 +217,16 @@ theorem sum_switchCount_eq (r : OrientableRotation c) :
   rw [← h_sum]
   exact Finset.sum_congr rfl (fun v _ => h_eq v)
 
-theorem card_minCorners_add_switchCount_eq_edgeCount (hP : ProperLayered c) (r : OrientableRotation c) :
-    (Finset.univ.filter (fun d : CircuitDart c => dartIsUp d = true ∧ dartIsUp (r.rotation d) = true)).card +
+theorem card_minCorners_add_switchCount_eq_edgeCount (hP : ProperLayered c)
+  (r : OrientableRotation c) :
+    (Finset.univ.filter
+      (fun d : CircuitDart c => dartIsUp d = true ∧ dartIsUp (r.rotation d) = true)).card +
     ∑ v : Fin c.gateCount, switchCount r v = underlyingEdgeCount c := by
   classical
   rw [sum_switchCount_eq]
   let T_up := Finset.univ.filter (fun d : CircuitDart c => dartIsUp d = true)
-  have h_add : (T_up.filter (fun d => dartIsUp (r.rotation d) = true)).card + (T_up.filter (fun d => dartIsUp (r.rotation d) = false)).card = T_up.card := by
+  have h_add : (T_up.filter (fun d => dartIsUp (r.rotation d) = true)).card +
+    (T_up.filter (fun d => dartIsUp (r.rotation d) = false)).card = T_up.card := by
     let T1 := T_up.filter (fun d => dartIsUp (r.rotation d) = true)
     let T2 := T_up.filter (fun d => dartIsUp (r.rotation d) = false)
     have h_union : T1 ∪ T2 = T_up := by
@@ -226,10 +239,16 @@ theorem card_minCorners_add_switchCount_eq_edgeCount (hP : ProperLayered c) (r :
       rw [h1] at h2
       contradiction
     rw [← Finset.card_union_of_disjoint h_disj, h_union]
-  have h1 : (Finset.univ.filter (fun d : CircuitDart c => dartIsUp d = true ∧ dartIsUp (r.rotation d) = true)) = T_up.filter (fun d => dartIsUp (r.rotation d) = true) := by
+  have h1 :
+    (Finset.univ.filter
+    (fun d : CircuitDart c => dartIsUp d = true ∧ dartIsUp (r.rotation d) = true)) = T_up.filter
+    (fun d => dartIsUp (r.rotation d) = true) := by
     ext d
     simp only [T_up, Finset.mem_filter, Finset.mem_univ, true_and]
-  have h2 : (Finset.univ.filter (fun d : CircuitDart c => dartIsUp d = true ∧ dartIsUp (r.rotation d) = false)) = T_up.filter (fun d => dartIsUp (r.rotation d) = false) := by
+  have h2 :
+    (Finset.univ.filter
+    (fun d : CircuitDart c => dartIsUp d = true ∧ dartIsUp (r.rotation d) = false)) = T_up.filter
+    (fun d => dartIsUp (r.rotation d) = false) := by
     ext d
     simp only [T_up, Finset.mem_filter, Finset.mem_univ, true_and]
   rw [h1, h2, h_add]
@@ -247,7 +266,6 @@ theorem switchCount_eq_one_of_internal (hP : ProperLayered c)
       have : IsGraphSource c v := fun x => Bool.eq_false_iff.mpr (h x)
       exact hns this
     exact ⟨u, v, hu⟩
-
   have hC : componentCount c = 1 := connected_of_unique_source hP hS hT
   have hI : isolatedVertexCount c = 0 := isolated_free hP hS hT h_edges
   
@@ -257,18 +275,15 @@ theorem switchCount_eq_one_of_internal (hP : ProperLayered c)
   let E := underlyingEdgeCount c
   let F := permCycleCount (facePermutation r)
   let K := ∑ x, switchCount r x
-  let M := (Finset.univ.filter (fun d : CircuitDart c => dartIsUp d = true ∧ dartIsUp (r.rotation d) = true)).card
-
+  let M :=
+    (Finset.univ.filter
+    (fun d : CircuitDart c => dartIsUp d = true ∧ dartIsUp (r.rotation d) = true)).card
   have hEuler_eq : 2 + E = c.gateCount + F := by omega
-
   have hMK : M + K = E := card_minCorners_add_switchCount_eq_edgeCount hP r
   have hFM : F ≤ M := card_minCorners_ge_faceCount hP r
-
   have hK_le : K ≤ c.gateCount - 2 := by omega
-
   obtain ⟨s, hs1, hs2⟩ := hS
   obtain ⟨t, ht1, ht2⟩ := hT
-
   have h_ne_st : s ≠ t := by
     intro heq
     subst heq
@@ -279,11 +294,13 @@ theorem switchCount_eq_one_of_internal (hP : ProperLayered c)
       · have := hs1 u; rw [this] at h; contradiction
     have h_iso_count : isolatedVertexCount c = 0 := hI
     unfold isolatedVertexCount at h_iso_count
-    have h_mem : s ∈ Finset.univ.filter (fun x : Fin c.gateCount => ∀ u, ¬UnderlyingAdj c x u) := by simp [h_iso_s]
-    have h_card_pos : 0 < (Finset.univ.filter (fun x : Fin c.gateCount => ∀ u, ¬UnderlyingAdj c x u)).card := Finset.card_pos.mpr ⟨s, h_mem⟩
+    have h_mem : s ∈ Finset.univ.filter (fun x : Fin c.gateCount => ∀ u, ¬UnderlyingAdj c x u) :=
+      by simp [h_iso_s]
+    have h_card_pos : 0 <
+      (Finset.univ.filter (fun x : Fin c.gateCount => ∀ u, ¬UnderlyingAdj c x u)).card :=
+      Finset.card_pos.mpr ⟨s, h_mem⟩
     rw [h_iso_count] at h_card_pos
     exact lt_irrefl 0 h_card_pos
-
   let I := Finset.univ.filter (fun x : Fin c.gateCount => ¬ IsGraphSource c x ∧ ¬ IsGraphSink c x)
   have h_I_card_le : I.card ≤ K := card_internal_le_sum_switchCount hP ⟨s, hs1, hs2⟩ ⟨t, ht1, ht2⟩ r
   
@@ -297,7 +314,8 @@ theorem switchCount_eq_one_of_internal (hP : ProperLayered c)
       simp [I, hx_not_s, hx_not_t]
     have h_union : I ∪ {s, t} = Finset.univ := by
       ext x
-      simp only [Finset.mem_union, Finset.mem_insert, Finset.mem_singleton, Finset.mem_univ, iff_true]
+      simp only
+        [Finset.mem_union, Finset.mem_insert, Finset.mem_singleton, Finset.mem_univ, iff_true]
       by_cases h : x = s ∨ x = t
       · exact Or.inr h
       · push_neg at h
@@ -314,22 +332,23 @@ theorem switchCount_eq_one_of_internal (hP : ProperLayered c)
     have h_card := Finset.card_union_of_disjoint h_disj
     rw [h_union] at h_card
     have h_st_card : ({s, t} : Finset (Fin c.gateCount)).card = 2 := Finset.card_pair h_ne_st
-    have h_univ_card : (Finset.univ : Finset (Fin c.gateCount)).card = c.gateCount := by rw [Finset.card_univ, Fintype.card_fin]
+    have h_univ_card : (Finset.univ : Finset (Fin c.gateCount)).card = c.gateCount := by rw
+      [Finset.card_univ, Fintype.card_fin]
     rw [h_st_card, h_univ_card] at h_card
     omega
-
   have hK_eq : K = c.gateCount - 2 := by omega
   have h_I_eq_K : I.card = K := by omega
   
-  have hs_zero : switchCount r s = 0 := switchCount_eq_zero_of_source hP r hs1
+  have hs_zero : switchCount r s = 0 := switchCount_eq_zero_of_source r hs1
   have ht_zero : switchCount r t = 0 := switchCount_eq_zero_of_sink hP r ht1
-
   have h_sum_I : ∑ x ∈ I, switchCount r x = K := by
     have h_sum_all : ∑ x, switchCount r x = K := rfl
-    have h_sum_split : ∑ x, switchCount r x = ∑ x ∈ I, switchCount r x + ∑ x ∈ {s, t}, switchCount r x := by
+    have h_sum_split : ∑ x, switchCount r x = ∑ x ∈ I, switchCount r x + ∑ x ∈ {s, t}, switchCount
+      r x := by
       have h_union : I ∪ {s, t} = Finset.univ := by
         ext x
-        simp only [Finset.mem_union, Finset.mem_insert, Finset.mem_singleton, Finset.mem_univ, iff_true]
+        simp only
+          [Finset.mem_union, Finset.mem_insert, Finset.mem_singleton, Finset.mem_univ, iff_true]
         by_cases h : x = s ∨ x = t
         · exact Or.inr h
         · push_neg at h
@@ -342,7 +361,8 @@ theorem switchCount_eq_one_of_internal (hP : ProperLayered c)
         · exact (by simp [I, hs1] : s ∉ I)
         · rw [Finset.disjoint_singleton_right]
           exact (by simp [I, ht1] : t ∉ I)
-      have hsum : ∑ x ∈ I ∪ {s, t}, switchCount r x = ∑ x ∈ I, switchCount r x + ∑ x ∈ {s, t}, switchCount r x := Finset.sum_union h_disj
+      have hsum : ∑ x ∈ I ∪ {s, t}, switchCount r x = ∑ x ∈ I, switchCount r x + ∑ x ∈ {s, t},
+        switchCount r x := Finset.sum_union h_disj
       rw [h_union] at hsum
       exact hsum
     have h_sum_st : ∑ x ∈ {s, t}, switchCount r x = 0 := by
@@ -351,17 +371,18 @@ theorem switchCount_eq_one_of_internal (hP : ProperLayered c)
     rw [h_sum_st, add_zero] at h_sum_split
     rw [h_sum_all] at h_sum_split
     exact h_sum_split.symm
-
   have h_v_in_I : v ∈ I := by
     simp only [I, Finset.mem_filter, Finset.mem_univ, true_and]
     exact ⟨hns, hnt⟩
-  have h_switch_v : 1 ≤ switchCount r v := one_le_switchCount_of_internal hP ⟨s, hs1, hs2⟩ ⟨t, ht1, ht2⟩ r hns hnt
+  have h_switch_v : 1 ≤ switchCount r v := one_le_switchCount_of_internal hP ⟨s, hs1, hs2⟩
+    ⟨t, ht1, ht2⟩ r hns hnt
   
   have h_sum_I_2 : ∑ x ∈ I, switchCount r x = I.card + ∑ x ∈ I, (switchCount r x - 1) := by
     have : ∀ x ∈ I, switchCount r x = 1 + (switchCount r x - 1) := by
       intro x hx
       rw [Finset.mem_filter] at hx
-      have h1 : 1 ≤ switchCount r x := one_le_switchCount_of_internal hP ⟨s, hs1, hs2⟩ ⟨t, ht1, ht2⟩ r hx.2.1 hx.2.2
+      have h1 : 1 ≤ switchCount r x := one_le_switchCount_of_internal hP ⟨s, hs1, hs2⟩
+        ⟨t, ht1, ht2⟩ r hx.2.1 hx.2.2
       omega
     rw [Finset.sum_congr rfl this, Finset.sum_add_distrib]
     simp

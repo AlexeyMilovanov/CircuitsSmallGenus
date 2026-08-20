@@ -100,14 +100,14 @@ theorem layerTransMap_botConfig {w : Nat} (hc : WellFormedADR c) (x : Fin n → 
       rw [hk] at hcomp
       simp [ADRGate.isComputation] at hcomp
     | andGate =>
-      simp only [hk]
+      simp only
       refine decide_eq_false ?_
       intro hall
       have hb := hall u0 hu0
       rw [dif_pos hlayer] at hb
       split at hb <;> simp at hb
     | orGate =>
-      simp only [hk]
+      simp only
       refine decide_eq_false ?_
       rintro ⟨u, hu, hbody⟩
       have hlu : c.layer u = ell := layer_pred_eq c hc hu
@@ -133,7 +133,7 @@ theorem layerTransMap_topConfig {w : Nat} (hc : WellFormedADR c) (hW : TotalWidt
     rw [hk] at hcomp
     simp [ADRGate.isComputation] at hcomp
   | andGate =>
-    simp only [hk]
+    simp only
     refine decide_eq_true ?_
     intro u hu
     have hlu : c.layer u = ell := layer_pred_eq c hc hu
@@ -142,7 +142,7 @@ theorem layerTransMap_topConfig {w : Nat} (hc : WellFormedADR c) (hW : TotalWidt
     rw [dif_pos hlt]
     trivial
   | orGate =>
-    simp only [hk]
+    simp only
     refine decide_eq_true ?_
     refine ⟨u0, hu0, ?_⟩
     have hlu : c.layer u0 = ell := layer_pred_eq c hc hu0

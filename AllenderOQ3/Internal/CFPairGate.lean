@@ -1,4 +1,4 @@
-import Mathlib
+import AllenderOQ3.Base
 import AllenderOQ3.Internal.OptCircuit
 import AllenderOQ3.Internal.OptCircuitCert
 import AllenderOQ3.Internal.OptCircuitInstances
@@ -23,7 +23,8 @@ def pairCircuit (preds : Fin w → List (Fin w)) (tgtKind : Fin w → ADRGate 1)
 theorem pairCircuit_edge_iff (preds : Fin w → List (Fin w)) (tgtKind : Fin w → ADRGate 1)
     {u v : Fin (pairCircuit hw preds tgtKind).gateCount} :
     (pairCircuit hw preds tgtKind).edge u v = true ↔
-      u.val < w ∧ w ≤ v.val ∧ ⟨u.val % w, Nat.mod_lt _ hw⟩ ∈ preds ⟨v.val % w, Nat.mod_lt _ hw⟩ := by
+      u.val < w ∧ w ≤ v.val ∧ ⟨u.val % w, Nat.mod_lt _ hw⟩ ∈ preds ⟨v.val % w, Nat.mod_lt _ hw⟩ :=
+        by
   dsimp [pairCircuit]
   exact decide_eq_true_iff
 
@@ -48,7 +49,7 @@ theorem pairCircuit_wellFormed (preds : Fin w → List (Fin w)) (tgtKind : Fin w
     have hv2 : v.val < 2 * w := v.isLt
     have h1 : (pairCircuit hw preds tgtKind).layer u = 0 := Nat.div_eq_of_lt hu
     have h2 : (pairCircuit hw preds tgtKind).layer v = 1 := by
-      show v.val / w = 1
+      change v.val / w = 1
       have hd : v.val / w < 2 := by
         by_contra hcon
         push_neg at hcon
@@ -67,8 +68,9 @@ theorem pairCircuit_wellFormed (preds : Fin w → List (Fin w)) (tgtKind : Fin w
       obtain ⟨i, b, hkind⟩ := hg
       by_cases hglt : g.val < w
       · omega
-      · have hk2 : (pairCircuit hw preds tgtKind).kind g = tgtKind ⟨g.val % w, Nat.mod_lt _ hw⟩ := by
-          show (if g.val < w then _ else _) = _
+      · have hk2 : (pairCircuit hw preds tgtKind).kind g = tgtKind ⟨g.val % w, Nat.mod_lt _ hw⟩ :=
+          by
+          change (if g.val < w then _ else _) = _
           rw [if_neg hglt]
         rw [hkind] at hk2
         have hc := h_comp ⟨g.val % w, Nat.mod_lt _ hw⟩
@@ -186,7 +188,8 @@ theorem pairCircuit_constantFreeLayer (preds : Fin w → List (Fin w)) (tgtKind 
     use ⟨u.val, h_u_lt⟩
     simp only [decide_eq_true_eq]
     refine ⟨u.isLt, hv.1, ?_⟩
-    have hu1 : (⟨u.val % w, Nat.mod_lt _ hw⟩ : Fin w) = u := Fin.eq_of_val_eq (Nat.mod_eq_of_lt u.isLt)
+    have hu1 : (⟨u.val % w, Nat.mod_lt _ hw⟩ : Fin w) = u := Fin.eq_of_val_eq
+      (Nat.mod_eq_of_lt u.isLt)
     rw [hu1]
     exact hu
 

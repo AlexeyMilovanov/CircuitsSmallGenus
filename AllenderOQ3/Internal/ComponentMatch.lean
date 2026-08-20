@@ -62,7 +62,8 @@ theorem runTrans_pieceConfig_eq_of_nbr {I K : Config w}
       rcases kind_and_or_or_of_constantFree c hcf (vtxAt c cert (ell + 1) hfull j) with hand | hor
       · obtain ⟨-, u0, hu0⟩ := hcf (vtxAt c cert (ell + 1) hfull j)
         have hall := (layerTransMap_and (x := xIn) hLe hfull hN.1 I j hand).mp hjI
-        exact ⟨j, ⟨u0, layer_pred_eq c hN.1 hu0⟩, hK'j, hu0, hall ⟨u0, layer_pred_eq c hN.1 hu0⟩ hu0⟩
+        exact
+          ⟨j, ⟨u0, layer_pred_eq c hN.1 hu0⟩, hK'j, hu0, hall ⟨u0, layer_pred_eq c hN.1 hu0⟩ hu0⟩
       · obtain ⟨u0, hu0, hu0I⟩ := (layerTransMap_or (x := xIn) hLe hfull hN.1 I j hor).mp hjI
         exact ⟨j, u0, hK'j, hu0, hu0I⟩
     have hnbrK' : nbr c cert xIn ell hN hW hfull hcf x K' = I := touch_eq_nbr hK'mem hI_mem htouch

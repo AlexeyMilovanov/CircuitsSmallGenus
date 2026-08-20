@@ -32,7 +32,8 @@ def State (w : Nat) := Fin w → Bool
 layer for computation gates. -/
 structure LayerIndexing (c : ADRCircuit n) (w : Nat) where
   slot : Fin c.gateCount → Fin w
-  injOnLayer : ∀ g h, (c.kind g).isComputation = true → (c.kind h).isComputation = true → c.layer g = c.layer h → slot g = slot h → g = h
+  injOnLayer : ∀ g h, (c.kind g).isComputation = true → (c.kind h).isComputation = true → c.layer g
+    = c.layer h → slot g = slot h → g = h
 
 /-- The configuration `s` is `false` on all slots from `activeSlots` on. -/
 def PaddedValid (s : State w) (activeSlots : Nat) : Prop :=
@@ -60,8 +61,10 @@ def GateStepValue {c : ADRCircuit n} (idx : LayerIndexing c w) (x : Fin n → Bo
 of layer `i`. -/
 def OneStep {c : ADRCircuit n} (idx : LayerIndexing c w) (x : Fin n → Bool)
     (i : Nat) (s t : State w) : Prop :=
-  (∀ g, (c.kind g).isComputation = true → c.layer g = i + 1 → (t (idx.slot g) = true ↔ GateStepValue idx x s g)) ∧
-  (∀ j : Fin w, (¬ ∃ g, (c.kind g).isComputation = true ∧ c.layer g = i + 1 ∧ idx.slot g = j) → t j = false)
+  (∀ g, (c.kind g).isComputation = true → c.layer g = i + 1 →
+    (t (idx.slot g) = true ↔ GateStepValue idx x s g)) ∧
+  (∀ j : Fin w, (¬ ∃ g, (c.kind g).isComputation = true ∧ c.layer g = i + 1 ∧ idx.slot g = j) → t j
+    = false)
 
 /-- The one-step relation is deterministic: the successor configuration of a
 given configuration is unique. -/
@@ -77,7 +80,8 @@ theorem oneStep_deterministic {c : ADRCircuit n} (idx : LayerIndexing c w)
 /-- The configuration of layer `i` carried by a family of gate values. -/
 def stateOf {c : ADRCircuit n} (idx : LayerIndexing c w)
     (value : Fin c.gateCount → Bool) (i : Nat) : State w :=
-  fun j => decide (∃ g, (c.kind g).isComputation = true ∧ c.layer g = i ∧ idx.slot g = j ∧ value g = true)
+  fun j => decide
+    (∃ g, (c.kind g).isComputation = true ∧ c.layer g = i ∧ idx.slot g = j ∧ value g = true)
 
 /-- Reading the slot of a computation gate of layer `i` off the layer-`i` configuration
 returns the value of that gate.  This is where injectivity of the slot

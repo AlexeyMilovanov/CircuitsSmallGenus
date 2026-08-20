@@ -25,7 +25,7 @@ theorem targetCutCandidateRises : TargetCutCandidateRises w := by
   have hyEval := eq_positiveAssignmentEval P K z y hsemAll hsemAny
   subst y
   obtain ⟨qt, hqt⟩ := exists_true_of_isIntervalConfig hw hy
-  obtain ⟨qf, hqf⟩ := exists_false_of_ne_topConfig hw hproper
+  obtain ⟨qf, hqf⟩ := exists_false_of_ne_topConfig hproper
   have htf : qt ≠ qf := by
     intro h
     rw [h, hqf] at hqt

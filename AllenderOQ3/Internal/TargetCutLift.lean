@@ -259,7 +259,7 @@ theorem targetBoundary_width (P : Fin w → List (Fin w)) :
 /-- Every cut strictly inside the target-major word lies in one unique
 nonempty target block.  Only existence is needed by the semantic proof. -/
 theorem exists_targetBlock_of_cut (hw : 0 < w)
-    (P : Fin w → List (Fin w)) (hne : ∀ p, P p ≠ [])
+    (P : Fin w → List (Fin w))
     {r : Nat} (hr : r < (arcPairWord P).length) :
     ∃ (p : Fin w) (j : Nat),
       j < (P p).length ∧ r = targetBoundary P p.val + j := by
@@ -307,7 +307,7 @@ theorem rotate_arcPairWord_insideBlock (P : Fin w → List (Fin w))
   let A := Lpre.flatMap (arcBlock P)
   let B := arcBlock P p
   let C := Lpost.flatMap (arcBlock P)
-  have hpidx : p.val < (List.finRange w).length := by simpa using p.isLt
+  have hpidx : p.val < (List.finRange w).length := by simp
   have hget : (List.finRange w)[p.val]'hpidx = p := by simp
   have htakeSucc := List.take_succ_eq_append_getElem
     (l := List.finRange w) (i := p.val) hpidx
@@ -393,7 +393,7 @@ theorem targetCutLift_insideBlock (hw : 0 < w)
   let block := targetCutStepBlock (K p) (P p)
   let Spre := Lpre.flatMap (fun q => targetCutStepBlock (K q) (P q))
   let Spost := Lpost.flatMap (fun q => targetCutStepBlock (K q) (P q))
-  have hpidx : p.val < (List.finRange w).length := by simpa using p.isLt
+  have hpidx : p.val < (List.finRange w).length := by simp
   have hget : (List.finRange w)[p.val]'hpidx = p := by simp
   have htakeSucc := List.take_succ_eq_append_getElem
     (l := List.finRange w) (i := p.val) hpidx
@@ -494,9 +494,9 @@ def TargetCutTracksStart (w : Nat) : Prop :=
 already located inside one known target block, the candidate prescribed by
 the AND/OR rule is a rising edge of the proper interval output. -/
 def TargetCutCandidateRises (w : Nat) : Prop :=
-  ∀ (hw : 0 < w) (P : Fin w → List (Fin w)) (K : Fin w → Bool)
-      (hne : ∀ p, P p ≠ []) (z y : Config w) (p : Fin w) (j : Nat)
-      (hj : j < (P p).length) (PT PF : List (Fin w × Fin w)),
+  ∀ (_hw : 0 < w) (P : Fin w → List (Fin w)) (K : Fin w → Bool)
+      (_hne : ∀ p, P p ≠ []) (z y : Config w) (p : Fin w) (j : Nat)
+      (_hj : j < (P p).length) (PT PF : List (Fin w × Fin w)),
     (arcPairWord P).rotate (targetBoundary P p.val + j) = PT ++ PF →
     (∀ e ∈ PT, z e.1 = true) →
     (∀ e ∈ PF, z e.1 = false) →
@@ -517,7 +517,7 @@ theorem targetCutTracksStart_of_candidateRises
     exact targetCutStepWord_length_pos hw P K hne
   let r := c % (arcPairWord P).length
   have hr : r < (arcPairWord P).length := Nat.mod_lt c hNpos
-  obtain ⟨p, j, hj, hrEq⟩ := exists_targetBlock_of_cut hw P hne hr
+  obtain ⟨p, j, hj, hrEq⟩ := exists_targetBlock_of_cut hw P hr
   have hpart' : (arcPairWord P).rotate (targetBoundary P p.val + j) = PT ++ PF := by
     rw [← hrEq]
     exact hpart

@@ -2,9 +2,6 @@ import AllenderOQ3.Internal.TransitionMonoid
 import AllenderOQ3.Internal.NonCrossingShift
 
 set_option autoImplicit false
-set_option maxHeartbeats 800000
-
-open Classical
 
 namespace AllenderOQ3.Internal
 
@@ -26,6 +23,7 @@ def IsCyclicInterval (s : Config w) (start : Fin w) (len : Nat) : Prop :=
   (len < w → s (finShift len start) = false) ∧
   (len < w → s (finPred start) = false)
 
+open Classical in
 /-- The count of maximal cyclic contiguous blocks of `true`s in a configuration. -/
 noncomputable def intervalCount (s : Config w) : Nat :=
   if w = 0 then 0
@@ -33,7 +31,7 @@ noncomputable def intervalCount (s : Config w) : Nat :=
   else (Finset.univ.filter (fun i : Fin w => s (finPred i) = false ∧ s i = true)).card
 
 /-- `finShift w j = j` since adding `w` is a full cycle in `Fin w`. -/
-private theorem finShift_w (hw : 0 < w) (j : Fin w) : finShift w j = j := by
+private theorem finShift_w (j : Fin w) : finShift w j = j := by
   apply Fin.ext
   simp [finShift, Nat.add_mod_right, Nat.mod_eq_of_lt j.isLt]
 
@@ -43,7 +41,7 @@ private theorem finPred_finShift_one (hw : 0 < w) (j : Fin w) : finPred (finShif
   rw [finShift_finShift]
   have : 1 + (w - 1) = w := by omega
   rw [this]
-  exact finShift_w hw j
+  exact finShift_w j
 
 /-- `finShift 1 (finPred j) = j`: successor of the predecessor is the identity. -/
 private theorem finShift_one_finPred (hw : 0 < w) (j : Fin w) : finShift 1 (finPred j) = j := by
@@ -51,14 +49,14 @@ private theorem finShift_one_finPred (hw : 0 < w) (j : Fin w) : finShift 1 (finP
   rw [finShift_finShift]
   have : w - 1 + 1 = w := by omega
   rw [this]
-  exact finShift_w hw j
+  exact finShift_w j
 
 /-- Every element of `Fin w` is reachable by iterated `finShift`. -/
 private theorem finShift_surj (j i : Fin w) :
     ∃ k : Nat, finShift k j = i := by
   use (i.val + w - j.val)
   apply Fin.ext
-  simp [finShift]
+  simp only [finShift]
   have hj := j.isLt
   have hi := i.isLt
   have h1 : j.val + (i.val + w - j.val) = i.val + w := by omega
@@ -183,7 +181,8 @@ private theorem card_filter_finPred_true (s : Config w) (hw : 0 < w) :
     simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hb ⊢
     exact ⟨finShift 1 b, by rw [finPred_finShift_one hw]; exact hb, finPred_finShift_one hw b⟩
 
-theorem intervalCount_zero_iff (s : Config w) (hw : 0 < w) : intervalCount s = 0 ↔ IsAllFalse s := by
+theorem intervalCount_zero_iff (s : Config w) (hw : 0 < w) : intervalCount s = 0 ↔ IsAllFalse s :=
+  by
   constructor
   · intro h0
     unfold intervalCount at h0
@@ -195,7 +194,8 @@ theorem intervalCount_zero_iff (s : Config w) (hw : 0 < w) : intervalCount s = 0
         intro x hpx
         by_contra hx
         have hxt : s x = true := by cases (s x) <;> simp_all
-        have hmem : x ∈ Finset.univ.filter (fun i : Fin w => s (finPred i) = false ∧ s i = true) := by
+        have hmem : x ∈ Finset.univ.filter (fun i : Fin w => s (finPred i) = false ∧ s i = true) :=
+          by
           simp [hpx, hxt]
         have hpos := Finset.card_pos.mpr ⟨x, hmem⟩
         omega
@@ -215,7 +215,8 @@ theorem intervalCount_zero_iff (s : Config w) (hw : 0 < w) : intervalCount s = 0
     simp only [Finset.filter_eq_empty_iff, Finset.mem_univ, true_implies, not_and]
     intro x _; rw [hf x]; simp
 
-theorem intervalCount_one_iff_allTrue (s : Config w) (hw : 0 < w) : IsAllTrue s → intervalCount s = 1 := by
+theorem intervalCount_one_iff_allTrue (s : Config w) (hw : 0 < w) : IsAllTrue s → intervalCount s =
+  1 := by
   intro h
   simp only [intervalCount]
   rw [if_neg (show ¬(w = 0) by omega)]

@@ -76,7 +76,7 @@ noncomputable def emptyTransition (ell : Nat)
 theorem tgt_index (p : Fin w) :
     (⟨(tgtVertex hw ρ β p).val.val % w, Nat.mod_lt _ hw⟩ : Fin w) = p := by
   apply Fin.ext
-  show (w + p.val) % w = p.val
+  change (w + p.val) % w = p.val
   rw [Nat.add_mod_left, Nat.mod_eq_of_lt p.isLt]
 
 /-- Index recovery at a source vertex. -/
@@ -89,7 +89,7 @@ theorem src_index (q : Fin w) :
 theorem optCircuit_edge_of (p q : Fin w) (h : ρ p = some q) :
     (optCircuit w hw ρ β).edge (srcVertex hw ρ β q).val (tgtVertex hw ρ β p).val
       = true := by
-  refine decide_eq_true ⟨q.isLt, by show w ≤ w + p.val; omega, ?_⟩
+  refine decide_eq_true ⟨q.isLt, by change w ≤ w + p.val; omega, ?_⟩
   rw [tgt_index hw ρ β p, src_index hw ρ β q]
   exact h
 
@@ -127,13 +127,13 @@ theorem arc_cases (e : TransitionArc (optCircuit w hw ρ β) 0) :
   rw [hindexv, hindexu] at hρ
   refine ⟨p, q, hρ, ?_⟩
   apply Subtype.ext
-  show (u, v) = ((srcVertex hw ρ β q).val, (tgtVertex hw ρ β p).val)
+  change (u, v) = ((srcVertex hw ρ β q).val, (tgtVertex hw ρ β p).val)
   have h1 : u = (srcVertex hw ρ β q).val := by
     apply Fin.ext
     rfl
   have h2 : v = (tgtVertex hw ρ β p).val := by
     apply Fin.ext
-    show v.val = w + (v.val - w)
+    change v.val = w + (v.val - w)
     have hge : w ≤ v.val := hv
     omega
   rw [← h1, ← h2]
@@ -188,8 +188,8 @@ theorem canonical_kind (hC : CanonicalOrders hw ρ β cert) (p : Fin w) :
         | some _ => ADRGate.andGate
         | none => ADRGate.literal ⟨0, Nat.zero_lt_one⟩ (!(β p)) := by
   rw [canonical_vtxAt hw ρ β hC p]
-  show (if (tgtVertex hw ρ β p).val.val < w then _ else _) = _
-  rw [if_neg (by show ¬ (w + p.val) < w; omega)]
+  change (if (tgtVertex hw ρ β p).val.val < w then _ else _) = _
+  rw [if_neg (by change ¬ (w + p.val) < w; omega)]
   rw [tgt_index hw ρ β p]
   rfl
 
@@ -229,7 +229,7 @@ theorem canonical_layerTrans (hC : CanonicalOrders hw ρ β cert) :
   rw [hrun, hgoal]
   cases hρp : ρ p with
   | none =>
-    show _ = β p
+    change _ = β p
     have hk : (optCircuit w hw ρ β).kind
         (vtxAt (optCircuit w hw ρ β) cert (0 + 1) hlen2 p).val
           = ADRGate.literal ⟨0, Nat.zero_lt_one⟩ (!(β p)) := by
@@ -237,7 +237,7 @@ theorem canonical_layerTrans (hC : CanonicalOrders hw ρ β cert) :
     rw [layerTransMap_literal (x := fun _ => true) hlen2 z p hk]
     cases β p <;> rfl
   | some q =>
-    show _ = z q
+    change _ = z q
     have hk : (optCircuit w hw ρ β).kind
         (vtxAt (optCircuit w hw ρ β) cert (0 + 1) hlen2 p).val
           = ADRGate.andGate := by

@@ -1,4 +1,4 @@
-import Mathlib
+import AllenderOQ3.Base
 import AllenderOQ3.Internal.ACCJoin
 import AllenderOQ3.Internal.ACCLocal
 
@@ -235,7 +235,7 @@ theorem exists_acc_blockAssembly_of_cond {G : Type} [Monoid G] [Fintype G]
           blockProd f start ((ee.symm i).1 j.castSucc).val ((ee.symm i).1 j.succ).val x
             = (ee.symm i).2 j := by
         intro j
-        have hj : (j.castSucc : Fin (K + 1)).val < K := by simpa using j.isLt
+        have hj : (j.castSucc : Fin (K + 1)).val < K := by simp
         have hacc := hi j.castSucc
         rw [hout_lt i j.castSucc hj] at hacc
         have hcast : (⟨(j.castSucc : Fin (K + 1)).val, hj⟩ : Fin K) = j := by
@@ -515,7 +515,7 @@ theorem exists_acc_chainAssembly_of_cond {G : Type} [Monoid G] [Fintype G]
         = (ee.symm i).2 j.castSucc * blockProd f start
             ((ee.symm i).1 j.castSucc).val ((ee.symm i).1 j.succ).val x := by
       intro j
-      have hj : (j.castSucc : Fin (K + 1)).val < K := by simpa using j.isLt
+      have hj : (j.castSucc : Fin (K + 1)).val < K := by simp
       have hacc := hi j.castSucc
       rw [hout_lt i j.castSucc hj] at hacc
       have hcast : (⟨(j.castSucc : Fin (K + 1)).val, hj⟩ : Fin K) = j := by
@@ -540,10 +540,10 @@ theorem exists_acc_chainAssembly_of_cond {G : Type} [Monoid G] [Fintype G]
     · rw [hout_last _ j hj, hsymm]
       refine (accAccepts_accConst n m _ x).mpr (decide_eq_true ?_)
       refine ⟨ht0, htlast, htmono, ?_, ?_⟩
-      · show blockProd f start 0 (t 0).val x = 1
+      · change blockProd f start 0 (t 0).val x = 1
         rw [ht0]
         exact blockProd_self f start 0 x
-      · show blockProd f start 0 (t (Fin.last K)).val x = h
+      · change blockProd f start 0 (t (Fin.last K)).val x = h
         rw [htlast]
         exact hx
 

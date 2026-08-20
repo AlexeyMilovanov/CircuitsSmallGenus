@@ -336,11 +336,11 @@ theorem neckPerm_rev_neckPerm (hpl : ProperLayered c)
       = (cutDartReverse c ell) x := by
   have h1 : (cutDartReverse c ell) ((neckPerm r ell) x)
       = (firstReturn r ell) x := by
-    show (cutDartReverse c ell) ((cutDartReverse c ell) ((firstReturn r ell) x))
+    change (cutDartReverse c ell) ((cutDartReverse c ell) ((firstReturn r ell) x))
       = (firstReturn r ell) x
     exact (cutDartReverse c ell).left_inv _
   rw [h1]
-  show (cutDartReverse c ell) ((firstReturn r ell) ((firstReturn r ell) x))
+  change (cutDartReverse c ell) ((firstReturn r ell) ((firstReturn r ell) x))
     = (cutDartReverse c ell) x
   rw [firstReturn_involutive hpl hS hT r hZero x]
 
@@ -407,7 +407,7 @@ theorem arcPerm_of_minCorner (hpl : ProperLayered c)
           (congrArg c.layer (r.preservesSource d)))
       = arcOfUpDart hpl ⟨d, upDart_cut_self hpl d h1⟩ rfl := by
   apply Subtype.ext
-  show ((neckPerm r (c.layer d.source))
+  change ((neckPerm r (c.layer d.source))
       (upOfArc (arcOfUpDart hpl ⟨r.rotation d, rotDart_cut_of_corner hpl r d h2⟩
         (congrArg c.layer (r.preservesSource d))))).1.1 = d.1
   rw [upOfArc_arcOfUpDart hpl ⟨r.rotation d, rotDart_cut_of_corner hpl r d h2⟩
@@ -427,13 +427,13 @@ theorem arcPerm_of_maxCorner (hpl : ProperLayered c)
           ((cutDartReverse c (c.layer d.target))
             ⟨r.rotation d, rotDart_cut_of_maxCorner hpl r d h1 h2⟩)
           (by
-            show c.layer (r.rotation d).target = c.layer d.target
+            change c.layer (r.rotation d).target = c.layer d.target
             have hs := congrArg c.layer (r.preservesSource d)
             have h3 := layer_of_not_dartIsUp hpl d h1
             have h4 := layer_of_not_dartIsUp hpl (r.rotation d) h2
             omega) := by
   apply Subtype.ext
-  show ((neckPerm r (c.layer d.target))
+  change ((neckPerm r (c.layer d.target))
       (upOfArc (arcOfUpDart hpl
         ⟨dartReverse c d, revDart_cut_of_down hpl d h1⟩ rfl))).1.1
     = ((cutDartReverse c (c.layer d.target))
@@ -512,10 +512,10 @@ theorem arcPerm_pow_rot_chain (hpl : ProperLayered c)
   | zero =>
     intro d hd hlv hcut hsrc hcd
     rw [pow_zero]
-    show arcOfUpDart hpl ⟨(r.rotation ^ 0) d, hcut⟩ hsrc
+    change arcOfUpDart hpl ⟨(r.rotation ^ 0) d, hcut⟩ hsrc
       = arcOfUpDart hpl ⟨d, hcd⟩ hlv
     apply Subtype.ext
-    show ((r.rotation ^ 0) d).1 = d.1
+    change ((r.rotation ^ 0) d).1 = d.1
     rw [pow_zero]
     rfl
   | succ m ih =>
@@ -576,7 +576,7 @@ theorem single_orbit_of_common_source (hpl : ProperLayered c)
   have harc' : arcOfUpDart hpl ⟨(r.rotation ^ k) (upOfArc e).1, hcut⟩ hsrc
       = e' := by
     apply Subtype.ext
-    show ((r.rotation ^ k) (upOfArc e).1).1 = e'.1
+    change ((r.rotation ^ k) (upOfArc e).1).1 = e'.1
     rw [hk]
     rfl
   have harc : arcOfUpDart hpl ⟨(upOfArc e).1, hcd⟩ hlv = e := by

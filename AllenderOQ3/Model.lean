@@ -1,4 +1,7 @@
-import Mathlib
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.GroupTheory.Perm.Basic
+import Mathlib.Data.Nat.Lattice
+import Mathlib.Logic.Relation
 
 abbrev BinaryLanguage := ∀ n : Nat, (Fin n → Bool) → Prop
 

@@ -13,7 +13,8 @@ def subtypeUnivEquiv {α : Type} {p : α → Prop} (h : ∀ x, p x) : α ≃ { x
   left_inv x := rfl
   right_inv x := rfl
 
-/-- A bijection between the vertices of layer `ell` and their indices in the certificate's layer order. -/
+/-- A bijection between the vertices of layer `ell` and their indices in the certificate's layer
+  order. -/
 noncomputable def FullLayerIndexing (cert : IncidenceCylinder c) (ell : Nat) :
     LayerVertex c ell ≃ Fin (cert.layerOrder ell).entries.length :=
   let l := (cert.layerOrder ell).entries

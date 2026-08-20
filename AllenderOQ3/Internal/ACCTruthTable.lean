@@ -9,7 +9,8 @@ Constructs a depth-2 DNF ACC circuit deciding any predicate on `Fin n → Bool`.
 Handles the `n = 0` single-gate case explicitly.
 -/
 
-noncomputable def accTruthTable (n m : Nat) (P : (Fin n → Bool) → Prop) (dec : ∀ x, Decidable (P x)) : ACCCircuit n m :=
+noncomputable def accTruthTable (n m : Nat) (P : (Fin n → Bool) → Prop)
+  (dec : ∀ x, Decidable (P x)) : ACCCircuit n m :=
   match n with
   | 0 =>
     let x0 : Fin 0 → Bool := fun i => i.elim0
@@ -35,12 +36,14 @@ noncomputable def accTruthTable (n m : Nat) (P : (Fin n → Bool) → Prop) (dec
         else if g.val < 2 * (n' + 1) + Fintype.card (Fin (n' + 1) → Bool) then 1
         else 2
       edge := fun u v =>
-        if h1 : u.val < 2 * (n' + 1) ∧ 2 * (n' + 1) ≤ v.val ∧ v.val < 2 * (n' + 1) + Fintype.card (Fin (n' + 1) → Bool) then
+        if h1 : u.val < 2 * (n' + 1) ∧ 2 * (n' + 1) ≤ v.val ∧ v.val < 2 * (n' + 1) + Fintype.card
+          (Fin (n' + 1) → Bool) then
           let val := (Fintype.equivFin (Fin (n' + 1) → Bool)).symm ⟨v.val - 2 * (n' + 1), by omega⟩
           let i : Fin (n' + 1) := ⟨u.val / 2, by omega⟩
           let isNeg := u.val % 2 = 1
           if isNeg then val i = false else val i = true
-        else if h2 : 2 * (n' + 1) ≤ u.val ∧ u.val < 2 * (n' + 1) + Fintype.card (Fin (n' + 1) → Bool) ∧ v.val = 2 * (n' + 1) + Fintype.card (Fin (n' + 1) → Bool) then
+        else if h2 : 2 * (n' + 1) ≤ u.val ∧ u.val < 2 * (n' + 1) + Fintype.card
+          (Fin (n' + 1) → Bool) ∧ v.val = 2 * (n' + 1) + Fintype.card (Fin (n' + 1) → Bool) then
           let val := (Fintype.equivFin (Fin (n' + 1) → Bool)).symm ⟨u.val - 2 * (n' + 1), by omega⟩
           match dec val with
           | isTrue _ => true
@@ -48,7 +51,8 @@ noncomputable def accTruthTable (n m : Nat) (P : (Fin n → Bool) → Prop) (dec
         else
           false }
 
-theorem wellFormedACC_accTruthTable (n m : Nat) (P : (Fin n → Bool) → Prop) (dec : ∀ x, Decidable (P x)) :
+theorem wellFormedACC_accTruthTable (n m : Nat) (P : (Fin n → Bool) → Prop)
+  (dec : ∀ x, Decidable (P x)) :
     WellFormedACC (accTruthTable n m P dec) := by
   cases n with
   | zero =>
@@ -84,8 +88,10 @@ theorem wellFormedACC_accTruthTable (n m : Nat) (P : (Fin n → Bool) → Prop) 
       simp only [accTruthTable] at hg
       split_ifs at hg
 
-theorem evalACC_accTruthTable (n m : Nat) (P : (Fin n → Bool) → Prop) (dec : ∀ x, Decidable (P x)) (x : Fin n → Bool) :
-    evalACC (accTruthTable n m P dec) (wellFormedACC_accTruthTable n m P dec) x (accTruthTable n m P dec).output = decide (P x) := by
+theorem evalACC_accTruthTable (n m : Nat) (P : (Fin n → Bool) → Prop) (dec : ∀ x, Decidable (P x))
+  (x : Fin n → Bool) :
+    evalACC (accTruthTable n m P dec) (wellFormedACC_accTruthTable n m P dec) x
+      (accTruthTable n m P dec).output = decide (P x) := by
   cases n with
   | zero =>
     have hx : x = fun i : Fin 0 => i.elim0 := funext fun i => i.elim0
@@ -127,7 +133,8 @@ theorem evalACC_accTruthTable (n m : Nat) (P : (Fin n → Bool) → Prop) (dec :
             by_cases hh : h.val < 2 * (n' + 1)
             · simp only [accTruthTable] at hedge
               rw [dif_pos (show h.val < 2 * (n' + 1) ∧ 2 * (n' + 1) ≤ g.val ∧
-                g.val < 2 * (n' + 1) + Fintype.card (Fin (n' + 1) → Bool) from ⟨hh, by omega, h2⟩)] at hedge
+                g.val < 2 * (n' + 1) + Fintype.card (Fin (n' + 1) → Bool) from ⟨hh, by omega, h2⟩)]
+                  at hedge
               simp only [V, dif_pos hh]
               split at hedge
               · rename_i hodd
@@ -157,7 +164,8 @@ theorem evalACC_accTruthTable (n m : Nat) (P : (Fin n → Bool) → Prop) (dec :
               have hedge : (accTruthTable (n' + 1) m P dec).edge ⟨2 * i.val, hlt⟩ g = true := by
                 simp only [accTruthTable]
                 rw [dif_pos (show 2 * i.val < 2 * (n' + 1) ∧ 2 * (n' + 1) ≤ g.val ∧
-                  g.val < 2 * (n' + 1) + Fintype.card (Fin (n' + 1) → Bool) from ⟨by omega, by omega, h2⟩)]
+                  g.val < 2 * (n' + 1) + Fintype.card (Fin (n' + 1) → Bool) from
+                    ⟨by omega, by omega, h2⟩)]
                 rw [if_neg (by omega)]
                 simpa [hidx] using hvi
               have hVh := H ⟨2 * i.val, hlt⟩ hedge
@@ -172,7 +180,8 @@ theorem evalACC_accTruthTable (n m : Nat) (P : (Fin n → Bool) → Prop) (dec :
               have hedge : (accTruthTable (n' + 1) m P dec).edge ⟨2 * i.val + 1, hlt⟩ g = true := by
                 simp only [accTruthTable]
                 rw [dif_pos (show 2 * i.val + 1 < 2 * (n' + 1) ∧ 2 * (n' + 1) ≤ g.val ∧
-                  g.val < 2 * (n' + 1) + Fintype.card (Fin (n' + 1) → Bool) from ⟨by omega, by omega, h2⟩)]
+                  g.val < 2 * (n' + 1) + Fintype.card (Fin (n' + 1) → Bool) from
+                    ⟨by omega, by omega, h2⟩)]
                 rw [if_pos (by omega)]
                 simpa [hidx] using hvi
               have hVh := H ⟨2 * i.val + 1, hlt⟩ hedge
@@ -297,7 +306,8 @@ theorem accTruthTable_gateCount_le_pow (T : Nat) :
       have h3 : K + 1 ≤ 2 ^ K := Nat.lt_two_pow_self
       omega
 
-theorem accAccepts_accTruthTable (n m : Nat) (P : (Fin n → Bool) → Prop) (dec : ∀ x, Decidable (P x)) (x : Fin n → Bool) :
+theorem accAccepts_accTruthTable (n m : Nat) (P : (Fin n → Bool) → Prop)
+  (dec : ∀ x, Decidable (P x)) (x : Fin n → Bool) :
     ACCAccepts (accTruthTable n m P dec) x ↔ P x := by
   rw [accAccepts_iff (wellFormedACC_accTruthTable n m P dec) x,
     evalACC_accTruthTable n m P dec x, decide_eq_true_iff]

@@ -1,4 +1,4 @@
-import Mathlib
+import AllenderOQ3.Base
 import AllenderOQ3.Internal.OptCircuit
 import AllenderOQ3.Internal.OptCircuitCert
 import AllenderOQ3.Internal.OptCircuitInstances
@@ -9,7 +9,8 @@ namespace AllenderOQ3.Internal
 
 variable {w : Nat}
 
-theorem optCircuit_constantFreeLayer (hw : 0 < w) {ρ : Fin w → Option (Fin w)} (h_total : ∀ i, (ρ i).isSome) (β : Fin w → Bool) :
+theorem optCircuit_constantFreeLayer (hw : 0 < w) {ρ : Fin w → Option (Fin w)}
+  (h_total : ∀ i, (ρ i).isSome) (β : Fin w → Bool) :
     ConstantFreeLayer (optCircuit w hw ρ β) 0 := by
   intro v
   have hv : w ≤ (v.val : Nat) ∧ (v.val : Nat) < 2 * w := by
@@ -35,7 +36,8 @@ theorem optCircuit_constantFreeLayer (hw : 0 < w) {ρ : Fin w → Option (Fin w)
       apply Fin.eq_of_val_eq
       simp [Nat.mod_eq_of_lt q.isLt]
 
-theorem optTrans_isConstantFreeMap (hw : 0 < w) {ρ : Fin w → Option (Fin w)} (h_total : ∀ i, (ρ i).isSome) (β : Fin w → Bool)
+theorem optTrans_isConstantFreeMap (hw : 0 < w) {ρ : Fin w → Option (Fin w)}
+  (h_total : ∀ i, (ρ i).isSome) (β : Fin w → Bool)
     (cert : IncidenceCylinder (optCircuit w hw ρ β)) (hC : CanonicalOrders hw ρ β cert) :
     isConstantFreeMap w (optTrans ρ β) := by
   use 1
@@ -43,7 +45,9 @@ theorem optTrans_isConstantFreeMap (hw : 0 < w) {ρ : Fin w → Option (Fin w)} 
   use cert
   use 0
   use (fun _ => true)
-  refine ⟨optCircuit_hmvNormal hw ρ β, optCircuit_totalWidth hw ρ β, ?_, optCircuit_constantFreeLayer hw h_total β, ?_⟩
+  refine
+    ⟨optCircuit_hmvNormal hw ρ β, optCircuit_totalWidth hw ρ β, ?_, optCircuit_constantFreeLayer hw
+    h_total β, ?_⟩
   · exact canonical_tgt_length hw ρ β hC
   · exact canonical_layerTrans hw ρ β hC
 
@@ -52,7 +56,12 @@ theorem dupNextTrans_memCF (hw : 0 < w) (i : Fin w) (hi : i.val + 1 < w) :
   apply Submonoid.subset_closure
   exact optTrans_isConstantFreeMap hw (β := beta0 w)
     (fun j => by dsimp [dupNextRho]; split_ifs <;> rfl)
-    (optCylinder hw (dupNextRho i) (beta0 w) (fun u => dupNextOut hw i hi (srcPos hw (dupNextRho i) (beta0 w) u)) (fun v => incAt hw (dupNextRho i) (beta0 w) (tgtPos hw (dupNextRho i) (beta0 w) v)) (fun u => dupNextOut_nodup hw i hi _) (fun v => incAt_nodup hw (dupNextRho i) (beta0 w) _) (dupNextOut_exact hw i hi) (incAt_exact hw (dupNextRho i) (beta0 w)) (dupNext_word_eq hw i hi))
+    (optCylinder hw (dupNextRho i) (beta0 w)
+      (fun u => dupNextOut hw i hi (srcPos hw (dupNextRho i) (beta0 w) u))
+      (fun v => incAt hw (dupNextRho i) (beta0 w) (tgtPos hw (dupNextRho i) (beta0 w) v))
+      (fun u => dupNextOut_nodup hw i hi _) (fun v => incAt_nodup hw (dupNextRho i) (beta0 w) _)
+      (dupNextOut_exact hw i hi) (incAt_exact hw (dupNextRho i) (beta0 w))
+      (dupNext_word_eq hw i hi))
     (optCylinder_canonical hw (dupNextRho i) (beta0 w) _ _ _ _ _ _ _)
 
 theorem dupPrevTrans_memCF (hw : 0 < w) (i : Fin w) (hi : i.val + 1 < w) :
@@ -60,7 +69,12 @@ theorem dupPrevTrans_memCF (hw : 0 < w) (i : Fin w) (hi : i.val + 1 < w) :
   apply Submonoid.subset_closure
   exact optTrans_isConstantFreeMap hw (β := beta0 w)
     (fun j => by dsimp [dupPrevRho]; split_ifs <;> rfl)
-    (optCylinder hw (dupPrevRho i hi) (beta0 w) (fun u => dupPrevOut hw i hi (srcPos hw (dupPrevRho i hi) (beta0 w) u)) (fun v => incAt hw (dupPrevRho i hi) (beta0 w) (tgtPos hw (dupPrevRho i hi) (beta0 w) v)) (fun u => dupPrevOut_nodup hw i hi _) (fun v => incAt_nodup hw (dupPrevRho i hi) (beta0 w) _) (dupPrevOut_exact hw i hi) (incAt_exact hw (dupPrevRho i hi) (beta0 w)) (dupPrev_word_eq hw i hi))
+    (optCylinder hw (dupPrevRho i hi) (beta0 w)
+      (fun u => dupPrevOut hw i hi (srcPos hw (dupPrevRho i hi) (beta0 w) u))
+      (fun v => incAt hw (dupPrevRho i hi) (beta0 w) (tgtPos hw (dupPrevRho i hi) (beta0 w) v))
+      (fun u => dupPrevOut_nodup hw i hi _) (fun v => incAt_nodup hw (dupPrevRho i hi) (beta0 w) _)
+      (dupPrevOut_exact hw i hi) (incAt_exact hw (dupPrevRho i hi) (beta0 w))
+      (dupPrev_word_eq hw i hi))
     (optCylinder_canonical hw (dupPrevRho i hi) (beta0 w) _ _ _ _ _ _ _)
 
 theorem ascLayer_memCF (hw : 0 < w) (J : Finset (Fin w)) (n : Nat) :

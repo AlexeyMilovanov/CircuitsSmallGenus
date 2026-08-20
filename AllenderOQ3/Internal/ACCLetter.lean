@@ -35,7 +35,8 @@ theorem layerTrans_congr_relevantInputs {c : ADRCircuit n} {cert : IncidenceCyli
       have h_layer := ((FullLayerIndexing c cert (ell + 1)).symm ⟨j.val, h_lt⟩).property
       have h_in : i ∈ relevantInputs c (ell + 1) 0 := by
         apply mem_relevantInputs.mpr
-        exact ⟨((FullLayerIndexing c cert (ell + 1)).symm ⟨j.val, h_lt⟩).val, b, by omega, by omega, hk⟩
+        exact
+          ⟨((FullLayerIndexing c cert (ell + 1)).symm ⟨j.val, h_lt⟩).val, b, by omega, by omega, hk⟩
       have h_eq := h i h_in
       rw [h_eq]
     next => rfl
@@ -50,7 +51,8 @@ theorem exists_acc_letterEq (hW : TotalWidthAtMost c w) (ell : Nat) (m : TransMo
       (∀ g, a.layer g ≤ 2) ∧
       a.gateCount ≤ 2 * w + 2 ^ w + 1 ∧
       ∀ x, ACCAccepts a x ↔ layerTrans (w := w) c cert x ell = m := by
-  have H : ∀ x y : Fin n → Bool, (∀ j, x (relevantInputsEmb c ell j) = y (relevantInputsEmb c ell j)) →
+  have H : ∀ x y : Fin n → Bool,
+    (∀ j, x (relevantInputsEmb c ell j) = y (relevantInputsEmb c ell j)) →
       (layerTrans (w := w) c cert x ell = m ↔ layerTrans c cert y ell = m) := by
     intro x y hxy
     have h_eq : layerTrans (w := w) c cert x ell = layerTrans c cert y ell := by
@@ -71,8 +73,10 @@ theorem exists_acc_letterEq (hW : TotalWidthAtMost c w) (ell : Nat) (m : TransMo
     have h2 : (relevantInputs c (ell + 1) 0).toList.length = (relevantInputs c (ell + 1) 0).card :=
       Finset.length_toList _
     omega
-  have h_size2 : 2 * (relevantInputs c (ell + 1) 0).toList.length + 2 ^ (relevantInputs c (ell + 1) 0).toList.length + 1 ≤ 2 * w + 2 ^ w + 1 := by
-    gcongr <;> omega
+  have h_size2 : 2 * (relevantInputs c (ell + 1) 0).toList.length + 2 ^
+    (relevantInputs c (ell + 1) 0).toList.length + 1 ≤ 2 * w + 2 ^ w + 1 := by
+    gcongr
+    omega
   exact le_trans hsize h_size2
 
 end AllenderOQ3.Internal

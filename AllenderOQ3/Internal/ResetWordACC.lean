@@ -76,7 +76,7 @@ theorem lTrivial_resetSubmonoid (w : Nat) : LTrivialMonoid (resetSubmonoid w) :=
   have huv' : u * a = b := congrArg Subtype.val huv
   have hvu' : v * b = a := congrArg Subtype.val hvu
   refine Subtype.ext ?_
-  show a = b
+  change a = b
   rcases mem_resetSubmonoid_iff.mp ha with rfl | ⟨q, rfl⟩
   · -- `a = 1`, so `b = u`
     rcases mem_resetSubmonoid_iff.mp hb with hb1 | ⟨q, hq⟩

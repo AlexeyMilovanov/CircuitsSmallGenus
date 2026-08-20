@@ -142,7 +142,7 @@ theorem localUnitsCommute_of_cf_glue (hcf : CFLocalUnitsCommute w) :
     have hPhirun : ∀ (f : TransMonoid w) (z : Config w),
         runTrans (Phi f) z = runTrans Bl (runTrans f (runTrans Al z)) := by
       intro f z
-      show runTrans (Al * f * Bl) z = _
+      change runTrans (Al * f * Bl) z = _
       rw [runTrans_mul, runTrans_mul]
     -- multiplicativity on right-`e`-absorbed elements
     have hmult : ∀ f g : TransMonoid w, f * e = f →

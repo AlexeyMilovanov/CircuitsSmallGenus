@@ -1,4 +1,4 @@
-import Mathlib
+import AllenderOQ3.Base
 
 /-!
 # Collapse of a ceiling-division chain

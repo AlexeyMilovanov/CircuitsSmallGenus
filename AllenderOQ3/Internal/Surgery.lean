@@ -1,4 +1,4 @@
-import AllenderOQ3.Model
+import AllenderOQ3.Base
 import AllenderOQ3.Internal.OrbitCount
 import AllenderOQ3.Internal.Subcircuit
 import AllenderOQ3.Internal.CountInvariance

@@ -314,7 +314,8 @@ theorem permCycleCount_split {D : Type} [Fintype D] [DecidableEq D] (P : Perm D)
   classical
   rw [permCycleCount_eq_natCard_quot_sameCycle, permCycleCount_eq_natCard_quot_sameCycle,
     permCycleCount_eq_natCard_quot_sameCycle]
-  set G : Quot (P.subtypePerm h).SameCycle ⊕ Quot (P.subtypePerm (p := fun x => ¬ S x) (fun x => not_congr (h x))).SameCycle
+  set G : Quot (P.subtypePerm h).SameCycle ⊕ Quot
+    (P.subtypePerm (p := fun x => ¬ S x) (fun x => not_congr (h x))).SameCycle
       → Quot P.SameCycle :=
     Sum.elim
       (Quot.lift (fun x : {x // S x} => Quot.mk P.SameCycle x.1)

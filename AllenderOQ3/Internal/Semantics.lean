@@ -1,4 +1,4 @@
-import AllenderOQ3.Model
+import AllenderOQ3.Base
 
 set_option autoImplicit false
 set_option linter.style.induction false

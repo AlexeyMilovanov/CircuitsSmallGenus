@@ -85,7 +85,7 @@ theorem optCircuit_wellFormed : WellFormedADR (optCircuit w hw ρ β) := by
     have hv2 : v.val < 2 * w := v.isLt
     have h1 : (optCircuit w hw ρ β).layer u = 0 := Nat.div_eq_of_lt hu
     have h2 : (optCircuit w hw ρ β).layer v = 1 := by
-      show v.val / w = 1
+      change v.val / w = 1
       have hd : v.val / w < 2 := by
         by_contra hcon
         push_neg at hcon
@@ -105,7 +105,7 @@ theorem optCircuit_wellFormed : WellFormedADR (optCircuit w hw ρ β) := by
       by_cases hglt : g.val < w
       · omega
       · have hk2 : (optCircuit w hw ρ β).kind g = ADRGate.andGate := by
-          show (if g.val < w then _ else _) = _
+          change (if g.val < w then _ else _) = _
           rw [if_neg hglt, hρ]
         rw [hkind] at hk2
         simp at hk2
@@ -185,12 +185,12 @@ theorem optCircuit_totalWidth : TotalWidthAtMost (optCircuit w hw ρ β) w := by
 
 /-- The source-layer vertex at position `p`. -/
 def srcVertex (p : Fin w) : LayerVertex (optCircuit w hw ρ β) 0 :=
-  ⟨⟨p.val, by show p.val < 2 * w; omega⟩, Nat.div_eq_of_lt p.isLt⟩
+  ⟨⟨p.val, by change p.val < 2 * w; omega⟩, Nat.div_eq_of_lt p.isLt⟩
 
 /-- The target-layer vertex at position `p`. -/
 def tgtVertex (p : Fin w) : LayerVertex (optCircuit w hw ρ β) 1 :=
-  ⟨⟨w + p.val, by show w + p.val < 2 * w; omega⟩, by
-    show (w + p.val) / w = 1
+  ⟨⟨w + p.val, by change w + p.val < 2 * w; omega⟩, by
+    change (w + p.val) / w = 1
     rw [Nat.add_comm, Nat.add_div_right _ hw, Nat.div_eq_of_lt p.isLt]⟩
 
 theorem srcVertex_injective : Function.Injective (srcVertex hw ρ β) := by
@@ -241,19 +241,19 @@ noncomputable def tgtListing : CyclicListing (LayerVertex (optCircuit w hw ρ β
     have heq : a = tgtVertex hw ρ β ⟨a.val.val - w, hb⟩ := by
       apply Subtype.ext
       apply Fin.ext
-      show a.val.val = w + (a.val.val - w)
+      change a.val.val = w + (a.val.val - w)
       omega
     rw [heq]
     exact List.mem_map_of_mem (List.mem_finRange _)
 
 theorem srcListing_length :
     (srcListing hw ρ β).entries.length = w := by
-  show ((List.finRange w).map (srcVertex hw ρ β)).length = w
+  change ((List.finRange w).map (srcVertex hw ρ β)).length = w
   rw [List.length_map, List.length_finRange]
 
 theorem tgtListing_length :
     (tgtListing hw ρ β).entries.length = w := by
-  show ((List.finRange w).map (tgtVertex hw ρ β)).length = w
+  change ((List.finRange w).map (tgtVertex hw ρ β)).length = w
   rw [List.length_map, List.length_finRange]
 
 /-- Listings agreeing entrywise with the canonical ones. -/
@@ -273,13 +273,13 @@ theorem vtxAt_eq_get {n : Nat} {c : ADRCircuit n} (cert : IncidenceCylinder c)
   have h1 : (FullLayerIndexing c cert ell)
       ((cert.layerOrder ell).entries.get ⟨j.val, by rw [h]; exact j.isLt⟩)
         = ⟨j.val, by rw [h]; exact j.isLt⟩ := by
-    show ((cert.layerOrder ell).nodup.getEquiv).symm
+    change ((cert.layerOrder ell).nodup.getEquiv).symm
       ⟨(cert.layerOrder ell).entries.get ⟨j.val, _⟩,
         (cert.layerOrder ell).complete _⟩ = _
     rw [Equiv.symm_apply_eq]
     apply Subtype.ext
     rfl
-  show (FullLayerIndexing c cert ell).symm _ = _
+  change (FullLayerIndexing c cert ell).symm _ = _
   rw [Equiv.symm_apply_eq]
   exact h1.symm
 
@@ -290,7 +290,7 @@ variable {cert : IncidenceCylinder (optCircuit w hw ρ β)}
 
 theorem canonical_tgt_length (hC : CanonicalOrders hw ρ β cert) :
     (cert.layerOrder (0 + 1)).entries.length = w := by
-  show (cert.layerOrder 1).entries.length = w
+  change (cert.layerOrder 1).entries.length = w
   rw [hC.2]
   exact tgtListing_length hw ρ β
 

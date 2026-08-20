@@ -131,7 +131,8 @@ theorem accAccepts_accCountEq {n m k d r : Nat} {f : Fin k → ACCCircuit n m}
   rw [h, pad_mod_eq_zero_iff hm]
 
 open Classical in
-def accModIn {n m k : Nat} (f : Fin k → ACCCircuit n m) (d : Nat) (subset : Finset (Fin k)) (r : Nat) : ACCCircuit n m :=
+def accModIn {n m k : Nat} (f : Fin k → ACCCircuit n m) (d : Nat) (subset : Finset (Fin k))
+  (r : Nat) : ACCCircuit n m :=
   let f' : Fin k → ACCCircuit n m := fun i =>
     if i ∈ subset then
       f i
@@ -199,7 +200,8 @@ theorem padModIn_layer {n m k d r : Nat} {subset : Finset (Fin k)}
     exact fun a => by rw [accConst_layer]; exact le_max_right d 1
 
 open Classical in
-theorem wellFormedACC_accModIn {n m k d r : Nat} {subset : Finset (Fin k)} {f : Fin k → ACCCircuit n m}
+theorem wellFormedACC_accModIn {n m k d r : Nat} {subset : Finset (Fin k)}
+  {f : Fin k → ACCCircuit n m}
     (hf : ∀ i ∈ subset, WellFormedACC (f i))
     (hd : ∀ i ∈ subset, ∀ a : Fin (f i).gateCount, (f i).layer a ≤ d) :
     WellFormedACC (accModIn f d subset r) := by
@@ -231,8 +233,10 @@ theorem sum_ite_mem_const {k : Nat} (s : Finset (Fin k)) (g : Fin k → Nat) :
   simp
 
 open Classical in
-theorem accModIn_gateCount {n m k d r : Nat} {subset : Finset (Fin k)} {f : Fin k → ACCCircuit n m} :
-    (accModIn f d subset r).gateCount = (∑ i ∈ subset, (f i).gateCount) + (k - subset.card) + ((m - (r % m)) % m) + 1 := by
+theorem accModIn_gateCount {n m k d r : Nat} {subset : Finset (Fin k)} {f : Fin k → ACCCircuit n m}
+  :
+    (accModIn f d subset r).gateCount = (∑ i ∈ subset, (f i).gateCount) + (k - subset.card) +
+      ((m - (r % m)) % m) + 1 := by
   classical
   have hpt : ∀ i : Fin k, (if i ∈ subset then f i else accConst n m false).gateCount
       = if i ∈ subset then (f i).gateCount else 1 := by

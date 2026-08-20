@@ -9,9 +9,9 @@ variable {n w : Nat}
 
 /-- For fixed constant states `s t` and a fixed layer index `i`, there is an `ACC[2]`
 circuit over `x` of depth `≤ 3` and size `O(c.gateCount)` accepting exactly
-`OneStep idx x i s t`.  (The well-formedness hypothesis `hc` is kept as stated, although
+`OneStep idx x i s t`.  (The well-formedness hypothesis `_hc` is kept as stated, although
 the construction does not need it.) -/
-theorem exists_acc_oneStep {c : ADRCircuit n} (hc : WellFormedADR c) (idx : LayerIndexing c w)
+theorem exists_acc_oneStep {c : ADRCircuit n} (_hc : WellFormedADR c) (idx : LayerIndexing c w)
     (i : Nat) (s t : State w) :
     ∃ (a : ACCCircuit n 2), WellFormedACC a ∧
       (∀ g, a.layer g ≤ 3) ∧
@@ -22,7 +22,7 @@ theorem exists_acc_oneStep {c : ADRCircuit n} (hc : WellFormedADR c) (idx : Laye
 
 /-- For a fixed constant state `t`, there is an `ACC[2]` circuit over `x` of depth `≤ 3`
 and size `O(c.gateCount)` accepting exactly `InitState idx x t`. -/
-theorem exists_acc_initState {c : ADRCircuit n} (hc : WellFormedADR c) (idx : LayerIndexing c w)
+theorem exists_acc_initState {c : ADRCircuit n} (_hc : WellFormedADR c) (idx : LayerIndexing c w)
     (t : State w) :
     ∃ (a : ACCCircuit n 2), WellFormedACC a ∧
       (∀ g, a.layer g ≤ 3) ∧
@@ -33,7 +33,7 @@ theorem exists_acc_initState {c : ADRCircuit n} (hc : WellFormedADR c) (idx : La
 
 /-- For a fixed constant state `t`, there is an `ACC[2]` circuit over `x` of depth `≤ 3`
 and size `O(c.gateCount)` accepting exactly when `t (idx.slot c.output) = true`. -/
-theorem exists_acc_outputState {c : ADRCircuit n} (hc : WellFormedADR c) (idx : LayerIndexing c w)
+theorem exists_acc_outputState {c : ADRCircuit n} (_hc : WellFormedADR c) (idx : LayerIndexing c w)
     (t : State w) :
     ∃ (a : ACCCircuit n 2), WellFormedACC a ∧
       (∀ g, a.layer g ≤ 3) ∧

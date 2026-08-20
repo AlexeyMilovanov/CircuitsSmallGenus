@@ -75,7 +75,7 @@ theorem exists_acc_betaPort_of_widthDrop {c : ADRCircuit n} (hc : WellFormedADR 
     ∃ b : ACCCircuit n M, WellFormedACC b ∧ (∀ g', b.layer g' ≤ d + 1) ∧
       b.gateCount ≤ c.gateCount * (c.gateCount + 1) ^ e + 1 ∧
       (∀ x, ACCAccepts b x ↔ betaPort c v c.output (evalADR c hc x) g = true) :=
-  exists_acc_betaPort_of_bridge hc hplanar hbridge g (fun h hh =>
+  exists_acc_betaPort_of_bridge hc hplanar hbridge g (fun _ hh =>
     width_ancestorCone_lt hc hv ((coreSet c v c.output).equivFin.symm g).2
       (mem_externalPreds.mp hh).2 (mem_externalPreds.mp hh).1)
 

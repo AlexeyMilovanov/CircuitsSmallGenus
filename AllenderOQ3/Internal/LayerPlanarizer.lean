@@ -1,4 +1,4 @@
-import AllenderOQ3.Model
+import AllenderOQ3.Base
 import AllenderOQ3.Internal.Surgery
 import AllenderOQ3.Internal.IntervalPiercing
 import AllenderOQ3.Internal.Subcircuit
@@ -105,7 +105,7 @@ theorem connected_meets_interval {n : Nat} (c : ADRCircuit n) (hc : WellFormedAD
   obtain ⟨w, hw1, hw2⟩ := connected_meets_layer hwf hreach hlo hhi
   have hwS : w ∈ S := reachable_induceSubgraph_mem c S ha hw1
   have hwl : c.layer w = ell := hw2
-  show ell ∈ S.image c.layer
+  change ell ∈ S.image c.layer
   exact Finset.mem_image.mpr ⟨w, hwS, hwl⟩
 
 /-- Disjoint layer images imply vertex-disjoint subgraphs. -/

@@ -1,4 +1,4 @@
-import Mathlib.Tactic
+import AllenderOQ3.Base
 
 /-!
 # Crude polynomial bounds by powers of a base at least two

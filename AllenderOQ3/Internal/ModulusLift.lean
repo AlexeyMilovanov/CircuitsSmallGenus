@@ -84,7 +84,9 @@ theorem modLiftEdge_eq_true_iff (c : ACCCircuit n m) (u v : Fin c.gateCount)
 
 /-- Common-modulus lifting: converts a `MOD_m` circuit to a `MOD_M` circuit where `M` is a
 multiple of `m`. -/
-def accModulusLift (c : ACCCircuit n m) (hM : m ∣ M) : ACCCircuit n M where
+-- The divisibility hypothesis `_hM` is part of the intended interface of the
+-- lift, but the data of the lifted circuit does not depend on it.
+def accModulusLift (c : ACCCircuit n m) (_hM : m ∣ M) : ACCCircuit n M where
   gateCount := c.gateCount * modulusCopies m M
   output := finProdFinEquiv (c.output, modZero m M)
   kind := fun G =>

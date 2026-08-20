@@ -1,3 +1,4 @@
+import Mathlib.Data.List.TakeWhile
 import AllenderOQ3.Internal.DoubleGroupingObstruction
 import AllenderOQ3.Internal.IncidenceToolkit
 

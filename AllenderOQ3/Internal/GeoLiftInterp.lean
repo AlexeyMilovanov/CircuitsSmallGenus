@@ -151,15 +151,15 @@ theorem exists_degree_one_monotone_interp (w : Nat) (hw : 0 < w) {k : Nat}
     rw [h1, h2, h4, h7, h5, h6, hidx_exact i, Nat.add_zero]
   refine ⟨fun x => G x - w * D, ?_, ?_, ?_⟩
   · intro x
-    show G (x + w) - w * D = G x - w * D + w
+    change G (x + w) - w * D = G x - w * D + w
     have h1 := hGper x
     have h2 := hGge x
     omega
   · intro x y hxy
-    show G x - w * D ≤ G y - w * D
+    change G x - w * D ≤ G y - w * D
     exact Nat.sub_le_sub_right (hGmono x y hxy) _
   · intro i
-    show G (S i) - w * D = T i
+    change G (S i) - w * D = T i
     have h1 := hGexact i
     omega
 

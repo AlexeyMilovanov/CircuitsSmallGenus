@@ -1,12 +1,16 @@
-import Mathlib
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.GroupTheory.Perm.Basic
+import Mathlib.Data.Nat.Lattice
+import Mathlib.Logic.Relation
 
 /-!
 # Trusted Comparator challenge: Allender OQ3
 
-This file is the complete human-trusted Lean statement for the 
+This file is the complete human-trusted Lean statement for the
 resolution of Allender's Open Question 3. It deliberately imports only
-Mathlib. The definitions below are copied verbatim from the project interface
-(AllenderOQ3/Model.lean).
+Mathlib modules -- the explicit ones listed above, and nothing from this
+project. The definitions below are copied verbatim from the project interface
+(AllenderOQ3/Model.lean), whose import header is identical.
 
 The proof is intentionally a `sorry`: Comparator checks that `Solution.lean`
 proves this exact statement, with these exact definitions, using only the

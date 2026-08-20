@@ -1,4 +1,4 @@
-import Mathlib
+import AllenderOQ3.Base
 
 /-!
 # Greedy piercing of a finite family of integer intervals

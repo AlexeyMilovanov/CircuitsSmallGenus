@@ -89,7 +89,7 @@ theorem card_minCorners_eq_faceCount (hP : ProperLayered c)
       intro v hv
       rw [Finset.mem_filter] at hv
       rcases not_and_or.mp hv.2 with h | h
-      · exact switchCount_eq_zero_of_source hP r (not_not.mp h)
+      · exact switchCount_eq_zero_of_source r (not_not.mp h)
       · exact switchCount_eq_zero_of_sink hP r (not_not.mp h)
     rw [h1, h2, add_zero]
   have hI_eq : Finset.univ.filter (fun x : Fin c.gateCount =>
@@ -262,7 +262,7 @@ theorem firstReturn_of_minCorner (hP : ProperLayered c)
     rw [firstReturnTime, Nat.find_eq_iff]
     constructor
     · refine ⟨le_refl 1, ?_⟩
-      show isCutDart c (c.layer d.source)
+      change isCutDart c (c.layer d.source)
         ((facePermutation r ^ 1) (dartReverse c d)) = true
       rw [pow_one, hstep]
       exact rotDart_cut_of_corner hP r d h2
@@ -282,7 +282,7 @@ theorem neckPerm_of_minCorner (hP : ProperLayered c)
         ⟨dartReverse c d, revDart_cut_of_up hP d h1⟩
       = (cutDartReverse c (c.layer d.source))
           ⟨r.rotation d, rotDart_cut_of_corner hP r d h2⟩ := by
-  show (cutDartReverse c (c.layer d.source))
+  change (cutDartReverse c (c.layer d.source))
       ((firstReturn r (c.layer d.source))
         ⟨dartReverse c d, revDart_cut_of_up hP d h1⟩) = _
   rw [firstReturn_of_minCorner hP r d h1 h2]
@@ -340,7 +340,7 @@ theorem firstReturn_of_maxCorner (hP : ProperLayered c)
     rw [firstReturnTime, Nat.find_eq_iff]
     constructor
     · refine ⟨le_refl 1, ?_⟩
-      show isCutDart c (c.layer d.target)
+      change isCutDart c (c.layer d.target)
         ((facePermutation r ^ 1) (dartReverse c d)) = true
       rw [pow_one, hstep]
       exact rotDart_cut_of_maxCorner hP r d h1 h2
@@ -360,7 +360,7 @@ theorem neckPerm_of_maxCorner (hP : ProperLayered c)
         ⟨dartReverse c d, revDart_cut_of_down hP d h1⟩
       = (cutDartReverse c (c.layer d.target))
           ⟨r.rotation d, rotDart_cut_of_maxCorner hP r d h1 h2⟩ := by
-  show (cutDartReverse c (c.layer d.target))
+  change (cutDartReverse c (c.layer d.target))
       ((firstReturn r (c.layer d.target))
         ⟨dartReverse c d, revDart_cut_of_down hP d h1⟩) = _
   rw [firstReturn_of_maxCorner hP r d h1 h2]

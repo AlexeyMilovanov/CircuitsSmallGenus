@@ -39,10 +39,12 @@ and maximal gap relations `[k, l]` avoiding `X`. -/
 inductive CutSequence (X : Finset Nat) : Nat → Nat → Type
   | empty (i : Nat) : CutSequence X i i
   | step {i j : Nat} (hX : i ∈ X) (rest : CutSequence X (i + 1) j) : CutSequence X i j
-  | gap {i k j : Nat} (h_lt : i < k) (h_not : ∀ l, i < l → l < k → l ∉ X) (rest : CutSequence X k j) : CutSequence X i j
+  | gap {i k j : Nat} (h_lt : i < k) (h_not : ∀ l, i < l → l < k → l ∉ X)
+      (rest : CutSequence X k j) : CutSequence X i j
 
 /-- The composition of a cut sequence with intermediate states. -/
-inductive ComposeChain {c : ADRCircuit n} (idx : LayerIndexing c w) (x : Fin n → Bool) {X : Finset Nat} :
+inductive ComposeChain {c : ADRCircuit n} (idx : LayerIndexing c w) (x : Fin n → Bool)
+  {X : Finset Nat} :
     ∀ {i j : Nat}, CutSequence X i j → State w → State w → Prop
   | empty {i : Nat} (s : State w) :
       ComposeChain idx x (CutSequence.empty i) s s

@@ -31,10 +31,12 @@ variable (hv : v ∈ coreSet c v o) (ho : o ∈ coreSet c v o)
 
 noncomputable def coreWithPorts : ADRCircuit n :=
   restrict (maskCircuit c (coreMask c v o))
-    (@subEmbeddingOfFinset n (maskCircuit c (coreMask c v o)) (coreSet c v o) (coreSet_predClosed_in_mask c v o))
+    (@subEmbeddingOfFinset n (maskCircuit c (coreMask c v o)) (coreSet c v o)
+      (coreSet_predClosed_in_mask c v o))
     ((coreSet c v o).equivFin ⟨o, ho⟩)
 
-@[simp] theorem coreWithPorts_gateCount : (coreWithPorts c v o ho).gateCount = (coreSet c v o).card := rfl
+@[simp] theorem coreWithPorts_gateCount : (coreWithPorts c v o ho).gateCount = (coreSet c v o).card
+  := rfl
 
 @[simp] theorem coreWithPorts_kind (g : Fin (coreSet c v o).card) :
     (coreWithPorts c v o ho).kind g = c.kind ((coreSet c v o).equivFin.symm g) := by
@@ -45,7 +47,8 @@ noncomputable def coreWithPorts : ADRCircuit n :=
   rfl
 
 @[simp] theorem coreWithPorts_edge (g h : Fin (coreSet c v o).card) :
-    (coreWithPorts c v o ho).edge g h = c.edge ((coreSet c v o).equivFin.symm g) ((coreSet c v o).equivFin.symm h) := by
+    (coreWithPorts c v o ho).edge g h = c.edge ((coreSet c v o).equivFin.symm g)
+      ((coreSet c v o).equivFin.symm h) := by
   dsimp [coreWithPorts, subEmbeddingOfFinset, restrict]
   simp [coreMask, ((coreSet c v o).equivFin.symm g).2, ((coreSet c v o).equivFin.symm h).2]
 
@@ -75,7 +78,9 @@ theorem rotationPlanar_coreWithPorts (hplanar : RotationPlanar c) :
     have hg_not_mem : g ∉ coreSet c v o := by
       intro hg
       have := hnot ((coreSet c v o).equivFin ⟨g, hg⟩)
-      have hsimp : (@subEmbeddingOfFinset n (maskCircuit c (coreMask c v o)) (coreSet c v o) (coreSet_predClosed_in_mask c v o)).toFun ((coreSet c v o).equivFin ⟨g, hg⟩) = g := by
+      have hsimp :
+        (@subEmbeddingOfFinset n (maskCircuit c (coreMask c v o)) (coreSet c v o)
+        (coreSet_predClosed_in_mask c v o)).toFun ((coreSet c v o).equivFin ⟨g, hg⟩) = g := by
         dsimp [subEmbeddingOfFinset]
         rw [Equiv.symm_apply_apply]
       exact this hsimp
@@ -116,9 +121,13 @@ theorem totalWidthAtMost_coreWithPorts :
     TotalWidthAtMost (coreWithPorts c v o ho) c.gateCount := by
   intro ell
   dsimp [TotalWidthAtMost]
-  have h1 : (Finset.univ.filter fun g : Fin (coreWithPorts c v o ho).gateCount => (coreWithPorts c v o ho).layer g = ell).card ≤ (Finset.univ : Finset (Fin (coreWithPorts c v o ho).gateCount)).card :=
+  have h1 :
+    (Finset.univ.filter fun g : Fin (coreWithPorts c v o ho).gateCount =>
+    (coreWithPorts c v o ho).layer g = ell).card ≤
+    (Finset.univ : Finset (Fin (coreWithPorts c v o ho).gateCount)).card :=
     Finset.card_filter_le _ _
-  have h_bound : (Finset.univ : Finset (Fin (coreWithPorts c v o ho).gateCount)).card ≤ c.gateCount := by
+  have h_bound : (Finset.univ : Finset (Fin (coreWithPorts c v o ho).gateCount)).card ≤ c.gateCount
+    := by
     simp only [coreWithPorts_gateCount, Finset.card_univ, Fintype.card_fin]
     have h_le := (coreSet c v o).card_le_univ
     simp only [Fintype.card_fin] at h_le
@@ -151,7 +160,8 @@ theorem predecessorCount_coreWithPorts_le_fanin {F : Nat}
     exact hg.1
   exact le_trans (predecessorCount_coreWithPorts_le_orig c v o ho g) (h_pred _ h_comp)
 
-theorem predecessorCount_coreWithPorts_le (h_pred : ∀ g, (c.kind g).isComputation = true → predecessorCount c g ≤ 2) :
+theorem predecessorCount_coreWithPorts_le
+  (h_pred : ∀ g, (c.kind g).isComputation = true → predecessorCount c g ≤ 2) :
     ∀ g, predecessorCount (coreWithPorts c v o ho) g ≤ 2 :=
   predecessorCount_coreWithPorts_le_fanin c v o ho h_pred
 

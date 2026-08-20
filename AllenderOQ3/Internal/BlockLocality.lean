@@ -45,7 +45,8 @@ theorem predValue_congr {c : ADRCircuit n} (idx : LayerIndexing c w)
 theorem gateStepValue_congr {c : ADRCircuit n} (idx : LayerIndexing c w)
     {x y : Fin n → Bool} {s : State w} {g : Fin c.gateCount}
     (h_self : ∀ (j : Fin n) (b : Bool), c.kind g = .literal j b → x j = y j)
-    (h_pred : ∀ h, c.edge h g = true → ∀ (j : Fin n) (b : Bool), c.kind h = .literal j b → x j = y j) :
+    (h_pred : ∀ h, c.edge h g = true → ∀ (j : Fin n) (b : Bool), c.kind h = .literal j b → x j = y
+      j) :
     GateStepValue idx x s g ↔ GateStepValue idx y s g := by
   unfold GateStepValue
   cases hk : c.kind g with
@@ -77,7 +78,8 @@ theorem oneStep_congr {c : ADRCircuit n} (hc : WellFormedADR c) (idx : LayerInde
 
 /-- **Locality of a block.**  A run of `k` steps starting at layer `i` reads the
 input only through the literal gates on layers `i, …, i + k`. -/
-theorem reach_congr {c : ADRCircuit n} (hc : WellFormedADR c) (idx : LayerIndexing c w) {x y : Fin n → Bool} :
+theorem reach_congr {c : ADRCircuit n} (hc : WellFormedADR c) (idx : LayerIndexing c w)
+  {x y : Fin n → Bool} :
     ∀ (k i : Nat) (s t : State w),
       (∀ g, i ≤ c.layer g → c.layer g ≤ i + k → ∀ (j : Fin n) (b : Bool),
         c.kind g = .literal j b → x j = y j) →
@@ -112,7 +114,8 @@ theorem mem_relevantInputs {c : ADRCircuit n} {i k : Nat} {j : Fin n} :
   simp [relevantInputs]
 
 /-- The block relation only depends on the input through `relevantInputs`. -/
-theorem reach_congr_relevantInputs {c : ADRCircuit n} (hc : WellFormedADR c) (idx : LayerIndexing c w)
+theorem reach_congr_relevantInputs {c : ADRCircuit n} (hc : WellFormedADR c)
+  (idx : LayerIndexing c w)
     {x y : Fin n → Bool} (k i : Nat) (s t : State w)
     (h : ∀ j ∈ relevantInputs c i k, x j = y j) :
     Reach idx x i k s t ↔ Reach idx y i k s t := by
@@ -168,7 +171,8 @@ theorem card_blockGates_le {c : ADRCircuit n} {w : Nat} (hw : TotalWidthAtMost c
 
 /-- **A block reads boundedly many inputs.**  In a circuit with total width `w`, 
 a block of length `k` reads at most `(k + 1) * w` input positions. -/
-theorem card_relevantInputs_le {c : ADRCircuit n} {w : Nat} (hw : TotalWidthAtMost c w) (i k : Nat) :
+theorem card_relevantInputs_le {c : ADRCircuit n} {w : Nat} (hw : TotalWidthAtMost c w) (i k : Nat)
+  :
     (relevantInputs c i k).card ≤ (k + 1) * w := by
   classical
   refine le_trans ?_ (card_blockGates_le hw i k)

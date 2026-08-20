@@ -45,13 +45,15 @@ theorem width_ancestorCone_lt {c : ADRCircuit n}
   -- The gates of `ancestorCone c h` are embedded via `ancestorEmbedding (setOutput c h)`
   let emb := ancestorEmbedding (setOutput c h)
   -- The computation gates of `ancestorCone c h` at layer `ell` inject into `R`
-  refine le_trans (Finset.card_le_card_of_injOn emb.toFun ?_ (Function.Injective.injOn emb.inj)) h_bound
+  refine le_trans (Finset.card_le_card_of_injOn emb.toFun ?_ (Function.Injective.injOn emb.inj))
+    h_bound
   intro a ha
   simp only [ancestorCone, prunedCircuit, restrict_layer, restrict_kind, Finset.coe_filter,
     Set.mem_setOf_eq, Finset.mem_univ, true_and] at ha
   simp only [Finset.coe_filter, Set.mem_setOf_eq, Finset.mem_univ, true_and]
   refine ⟨by exact ha.1, by exact ha.2, ?_⟩
-  have ha_reach := (mem_ancestorSet (setOutput c h) (emb.toFun a)).mp (subEmbeddingOfFinset_apply_mem (ancestorSet (setOutput c h)) _ a)
+  have ha_reach := (mem_ancestorSet (setOutput c h) (emb.toFun a)).mp
+    (subEmbeddingOfFinset_apply_mem (ancestorSet (setOutput c h)) _ a)
   have ha_reach_c : EdgeReach c (emb.toFun a) h := ha_reach
   exact ancestor_of_external_notMem_coreSet hc hg h_edge h_ext (emb.toFun a) ha_reach_c
 

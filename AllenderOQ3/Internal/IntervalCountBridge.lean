@@ -2,9 +2,6 @@ import AllenderOQ3.Internal.IntervalStart
 import AllenderOQ3.Internal.IntervalPieces
 
 set_option autoImplicit false
-set_option maxHeartbeats 800000
-
-open Classical
 
 namespace AllenderOQ3.Internal
 
@@ -17,7 +14,8 @@ theorem intervalCount_eq_card_risingEdges (s : Config w) (hw : 0 < w) (h : ¬ Is
   rw [if_neg h]
   rfl
 
-theorem intervalCount_eq_one_of_isIntervalConfig (hw : 0 < w) {y : Config w} (h : IsIntervalConfig y) : intervalCount y = 1 := by
+theorem intervalCount_eq_one_of_isIntervalConfig (hw : 0 < w) {y : Config w}
+  (h : IsIntervalConfig y) : intervalCount y = 1 := by
   unfold IsIntervalConfig IsIntervalPiece at h
   rcases h with ⟨start, len, hcyc, rfl⟩
   have hlen : 0 < len ∧ len ≤ w := ⟨hcyc.1, hcyc.2.1⟩
@@ -39,10 +37,13 @@ theorem intervalCount_eq_one_of_isIntervalConfig (hw : 0 < w) {y : Config w} (h 
     rw [risingEdges_pieceConfig hlen.1 hlen_lt]
     exact Finset.card_singleton start
 
-theorem isIntervalConfig_of_intervalCount_eq_one (hw : 0 < w) {y : Config w} (h : intervalCount y = 1) : IsIntervalConfig y := by
+theorem isIntervalConfig_of_intervalCount_eq_one (hw : 0 < w) {y : Config w}
+  (h : intervalCount y = 1) : IsIntervalConfig y := by
   by_cases hall : IsAllTrue y
   · refine ⟨⟨0, hw⟩, w, ?_, ?_⟩
-    · refine ⟨hw, le_refl w, fun k _ => hall _, fun h => absurd h (lt_irrefl w), fun h => absurd h (lt_irrefl w)⟩
+    · refine
+        ⟨hw, le_refl w, fun k _ => hall _, fun h => absurd h (lt_irrefl w), fun h => absurd h
+        (lt_irrefl w)⟩
     · ext j
       have : y j = true := hall j
       rw [this]
@@ -134,7 +135,8 @@ theorem isIntervalConfig_of_intervalCount_eq_one (hw : 0 < w) {y : Config w} (h 
       symm
       exact hy_piece_j
 
-theorem intervalsOf_eq_singleton_of_isIntervalConfig (_hw : 0 < w) {y : Config w} (h : IsIntervalConfig y) : intervalsOf y = {y} := by
+theorem intervalsOf_eq_singleton_of_isIntervalConfig (_hw : 0 < w) {y : Config w}
+  (h : IsIntervalConfig y) : intervalsOf y = {y} := by
   ext y'
   constructor
   · intro hy'
@@ -195,7 +197,8 @@ theorem intervalsOf_eq_singleton_of_isIntervalConfig (_hw : 0 < w) {y : Config w
           exact this
         exact ⟨hs.2.2.2.2 hl_lt, ht⟩
       have h_s_eq : s = start := by
-        have h1 : risingEdges (pieceConfig start len) = {start} := risingEdges_pieceConfig hlen.1 hlen_lt
+        have h1 : risingEdges (pieceConfig start len) = {start} := risingEdges_pieceConfig hlen.1
+          hlen_lt
         rw [h1] at h_s_rising
         exact Finset.mem_singleton.mp h_s_rising
       rw [h_s_eq] at hs

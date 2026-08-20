@@ -36,13 +36,15 @@ theorem adrValuation_setOutput {n : Nat} {c : ADRCircuit n}
 theorem evalADR_setOutput {n : Nat} {c : ADRCircuit n} (hc : WellFormedADR c)
     (h : Fin c.gateCount) (x : Fin n → Bool) :
     evalADR (setOutput c h) (wellFormedADR_setOutput hc h) x = evalADR c hc x := by
-  have H1 := Classical.choose_spec (adrValuation_exists (setOutput c h) (wellFormedADR_setOutput hc h) x)
+  have H1 := Classical.choose_spec
+    (adrValuation_exists (setOutput c h) (wellFormedADR_setOutput hc h) x)
   have H2 := Classical.choose_spec (adrValuation_exists c hc x)
   have H1' : ADRValuation c x (evalADR (setOutput c h) (wellFormedADR_setOutput hc h) x) := by
     exact (adrValuation_setOutput x _ h).mp H1
   exact adrValuation_unique hc H1' H2
 
-theorem underlyingAdj_setOutput {n : Nat} {c : ADRCircuit n} (h : Fin c.gateCount) (u v : Fin c.gateCount) :
+theorem underlyingAdj_setOutput {n : Nat} {c : ADRCircuit n} (h : Fin c.gateCount)
+  (u v : Fin c.gateCount) :
     UnderlyingAdj (setOutput c h) u v ↔ UnderlyingAdj c u v := by rfl
 
 def orientableRotation_setOutput {n : Nat} {c : ADRCircuit n}
@@ -52,7 +54,8 @@ def orientableRotation_setOutput {n : Nat} {c : ADRCircuit n}
   preservesSource := r.preservesSource
   cyclicAtVertex := r.cyclicAtVertex
 
-theorem rotationGenus_setOutput {n : Nat} {c : ADRCircuit n} (r : OrientableRotation c) (h : Fin c.gateCount) :
+theorem rotationGenus_setOutput {n : Nat} {c : ADRCircuit n} (r : OrientableRotation c)
+  (h : Fin c.gateCount) :
     rotationGenus (orientableRotation_setOutput r h) = rotationGenus r := by
   rfl
 
